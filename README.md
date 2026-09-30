@@ -383,8 +383,6 @@ Para testar a comunicação, execute o software em **dois terminais diferentes**
 
 ## 5. Divisão de Tarefas
 
-> **Nota:** Preencher com os nomes e contribuições de cada membro da equipe.
-
 | Membro | Responsabilidades |
 |--------|-------------------|
 | Joaquim Miranda Eitelvein Lopes | Desenvolvimento do Método 1 (transmitter.py - batidas), calibração de tempos |
