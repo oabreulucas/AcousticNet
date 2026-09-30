@@ -1,0 +1,1950 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AcousticNet — Comunicação Acústica | Camada Física</title>
+    <meta name="description" content="Software de Camada Física para Comunicação Acústica - Redes de Computadores UTFPR">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        /* ============================================================
+           AcousticNet — Design System
+           ============================================================ */
+        :root {
+            --bg-primary: #0a0e1a;
+            --bg-secondary: #111827;
+            --bg-card: #1a2035;
+            --bg-card-hover: #1f2847;
+            --bg-input: #0d1225;
+            --border: #2a3555;
+            --border-focus: #3b82f6;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent-blue: #3b82f6;
+            --accent-cyan: #06b6d4;
+            --accent-green: #10b981;
+            --accent-red: #ef4444;
+            --accent-yellow: #f59e0b;
+            --accent-purple: #8b5cf6;
+            --accent-pink: #ec4899;
+            --gradient-blue: linear-gradient(135deg, #3b82f6, #06b6d4);
+            --gradient-green: linear-gradient(135deg, #10b981, #06b6d4);
+            --gradient-red: linear-gradient(135deg, #ef4444, #ec4899);
+            --gradient-purple: linear-gradient(135deg, #8b5cf6, #3b82f6);
+            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-md: 0 4px 20px rgba(0,0,0,0.4);
+            --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
+            --shadow-glow-blue: 0 0 30px rgba(59,130,246,0.15);
+            --shadow-glow-green: 0 0 30px rgba(16,185,129,0.15);
+            --shadow-glow-red: 0 0 30px rgba(239,68,68,0.15);
+            --radius-sm: 8px;
+            --radius-md: 12px;
+            --radius-lg: 16px;
+            --radius-xl: 20px;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        /* ============================================================
+           Layout
+           ============================================================ */
+        .app {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--bg-secondary);
+            border-right: 1px solid var(--border);
+            display: flex;
+            flex-direction: column;
+            position: fixed;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            z-index: 100;
+            transition: var(--transition);
+        }
+
+        .sidebar-header {
+            padding: 24px 20px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background: var(--gradient-blue);
+            border-radius: var(--radius-md);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: var(--shadow-glow-blue);
+        }
+
+        .logo-text h1 {
+            font-size: 18px;
+            font-weight: 700;
+            background: var(--gradient-blue);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            letter-spacing: -0.5px;
+        }
+
+        .logo-text span {
+            font-size: 11px;
+            color: var(--text-muted);
+            font-weight: 400;
+        }
+
+        .nav-section {
+            padding: 16px 12px 8px;
+        }
+
+        .nav-section-title {
+            font-size: 10px;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: var(--text-muted);
+            padding: 0 8px;
+            margin-bottom: 8px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 10px 12px;
+            border-radius: var(--radius-sm);
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: var(--transition);
+            font-size: 13.5px;
+            font-weight: 500;
+            position: relative;
+            user-select: none;
+        }
+
+        .nav-item:hover {
+            background: var(--bg-card);
+            color: var(--text-primary);
+        }
+
+        .nav-item.active {
+            background: rgba(59, 130, 246, 0.12);
+            color: var(--accent-blue);
+        }
+
+        .nav-item.active::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 3px;
+            height: 20px;
+            background: var(--accent-blue);
+            border-radius: 0 3px 3px 0;
+        }
+
+        .nav-icon {
+            font-size: 18px;
+            width: 24px;
+            text-align: center;
+            flex-shrink: 0;
+        }
+
+        .nav-badge {
+            margin-left: auto;
+            font-size: 10px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: 600;
+        }
+
+        .badge-green { background: rgba(16,185,129,0.15); color: var(--accent-green); }
+        .badge-blue { background: rgba(59,130,246,0.15); color: var(--accent-blue); }
+        .badge-purple { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
+        .badge-yellow { background: rgba(245,158,11,0.15); color: var(--accent-yellow); }
+
+        /* Main Content */
+        .main {
+            flex: 1;
+            margin-left: 280px;
+            padding: 32px;
+            max-width: 1200px;
+        }
+
+        .page { display: none; animation: fadeIn 0.4s ease; }
+        .page.active { display: block; }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(12px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .page-header {
+            margin-bottom: 28px;
+        }
+
+        .page-header h2 {
+            font-size: 26px;
+            font-weight: 700;
+            letter-spacing: -0.5px;
+            margin-bottom: 6px;
+        }
+
+        .page-header p {
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.6;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            margin-bottom: 20px;
+            transition: var(--transition);
+        }
+
+        .card:hover {
+            border-color: rgba(59,130,246,0.3);
+        }
+
+        .card-title {
+            font-size: 15px;
+            font-weight: 600;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        /* Form Elements */
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-group label {
+            display: block;
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 12px 16px;
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            color: var(--text-primary);
+            font-family: 'Inter', sans-serif;
+            font-size: 14px;
+            transition: var(--transition);
+            outline: none;
+        }
+
+        .input-field:focus {
+            border-color: var(--accent-blue);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+        }
+
+        .input-field::placeholder { color: var(--text-muted); }
+
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 11px 22px;
+            border-radius: var(--radius-sm);
+            font-family: 'Inter', sans-serif;
+            font-size: 13.5px;
+            font-weight: 600;
+            border: none;
+            cursor: pointer;
+            transition: var(--transition);
+            outline: none;
+            user-select: none;
+        }
+
+        .btn:active { transform: scale(0.97); }
+
+        .btn-primary {
+            background: var(--gradient-blue);
+            color: white;
+            box-shadow: 0 2px 12px rgba(59,130,246,0.3);
+        }
+        .btn-primary:hover { box-shadow: 0 4px 20px rgba(59,130,246,0.45); filter: brightness(1.1); }
+        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; filter: none; }
+
+        .btn-success {
+            background: var(--gradient-green);
+            color: white;
+            box-shadow: 0 2px 12px rgba(16,185,129,0.3);
+        }
+        .btn-success:hover { box-shadow: 0 4px 20px rgba(16,185,129,0.45); filter: brightness(1.1); }
+
+        .btn-danger {
+            background: var(--gradient-red);
+            color: white;
+            box-shadow: 0 2px 12px rgba(239,68,68,0.3);
+        }
+        .btn-danger:hover { box-shadow: 0 4px 20px rgba(239,68,68,0.45); filter: brightness(1.1); }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--text-secondary);
+            border: 1px solid var(--border);
+        }
+        .btn-outline:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        /* Log/Output Console */
+        .console {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 16px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+            line-height: 1.8;
+            max-height: 400px;
+            overflow-y: auto;
+            white-space: pre-wrap;
+            word-break: break-all;
+        }
+
+        .console::-webkit-scrollbar { width: 6px; }
+        .console::-webkit-scrollbar-track { background: transparent; }
+        .console::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+        .log-success { color: var(--accent-green); }
+        .log-error { color: var(--accent-red); }
+        .log-info { color: var(--accent-cyan); }
+        .log-warn { color: var(--accent-yellow); }
+        .log-muted { color: var(--text-muted); }
+        .log-bold { font-weight: 600; }
+        .log-bit0 { color: var(--accent-cyan); }
+        .log-bit1 { color: var(--accent-yellow); }
+
+        /* Status Badges */
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-success {
+            background: rgba(16,185,129,0.12);
+            color: var(--accent-green);
+            border: 1px solid rgba(16,185,129,0.25);
+        }
+
+        .status-error {
+            background: rgba(239,68,68,0.12);
+            color: var(--accent-red);
+            border: 1px solid rgba(239,68,68,0.25);
+        }
+
+        .status-waiting {
+            background: rgba(245,158,11,0.12);
+            color: var(--accent-yellow);
+            border: 1px solid rgba(245,158,11,0.25);
+        }
+
+        /* Canvas Visualizer */
+        .visualizer-container {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-sm);
+            padding: 4px;
+            margin-bottom: 16px;
+        }
+
+        .visualizer-container canvas {
+            width: 100%;
+            height: 100px;
+            border-radius: 6px;
+            display: block;
+        }
+
+        /* Stats Grid */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 12px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--bg-input);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            padding: 16px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 22px;
+            font-weight: 700;
+            font-family: 'JetBrains Mono', monospace;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 11px;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* Demo Table */
+        .demo-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            font-size: 13px;
+        }
+
+        .demo-table th {
+            text-align: left;
+            padding: 10px 14px;
+            background: var(--bg-input);
+            color: var(--text-secondary);
+            font-weight: 600;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .demo-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
+        .demo-table th:last-child { border-radius: 0 var(--radius-sm) 0 0; }
+
+        .demo-table td {
+            padding: 10px 14px;
+            border-bottom: 1px solid rgba(42,53,85,0.5);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+        }
+
+        .demo-table tr:last-child td { border-bottom: none; }
+        .demo-table tr:hover td { background: rgba(59,130,246,0.04); }
+
+        .bit-display {
+            font-family: 'JetBrains Mono', monospace;
+            letter-spacing: 2px;
+        }
+
+        .bit-0 { color: var(--accent-cyan); }
+        .bit-1 { color: var(--accent-yellow); }
+        .bit-corrupted { color: var(--accent-red); text-decoration: underline; font-weight: 700; }
+
+        /* Info Panels */
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+            gap: 16px;
+        }
+
+        .info-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 24px;
+            transition: var(--transition);
+        }
+
+        .info-card:hover {
+            border-color: rgba(59,130,246,0.3);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .info-card h3 {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .info-card .info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            font-size: 13px;
+            border-bottom: 1px solid rgba(42,53,85,0.4);
+        }
+
+        .info-card .info-row:last-child { border-bottom: none; }
+        .info-card .info-label { color: var(--text-secondary); }
+        .info-card .info-value { color: var(--text-primary); font-weight: 500; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; }
+
+        /* Progress bar */
+        .progress-bar {
+            height: 4px;
+            background: var(--bg-input);
+            border-radius: 2px;
+            overflow: hidden;
+            margin: 12px 0;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: var(--gradient-blue);
+            border-radius: 2px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+
+        /* Pulse animation */
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .pulsing { animation: pulse 1.5s ease-in-out infinite; }
+
+        /* OSI Layer Table */
+        .osi-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0 4px;
+        }
+
+        .osi-table td {
+            padding: 10px 16px;
+            font-size: 13px;
+        }
+
+        .osi-table tr {
+            background: var(--bg-input);
+            border-radius: var(--radius-sm);
+        }
+
+        .osi-table tr:last-child {
+            background: rgba(59,130,246,0.1);
+            border: 1px solid rgba(59,130,246,0.3);
+        }
+
+        .osi-table tr:last-child td {
+            color: var(--accent-blue);
+            font-weight: 600;
+        }
+
+        .osi-table td:first-child {
+            border-radius: var(--radius-sm) 0 0 var(--radius-sm);
+            font-weight: 600;
+            width: 40px;
+            text-align: center;
+        }
+
+        .osi-table td:last-child {
+            border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+            color: var(--text-muted);
+            font-size: 12px;
+        }
+
+        /* Footer */
+        .sidebar-footer {
+            margin-top: auto;
+            padding: 16px 20px;
+            border-top: 1px solid var(--border);
+            font-size: 11px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .sidebar { width: 60px; }
+            .sidebar .nav-item span, .sidebar .nav-section-title,
+            .sidebar .logo-text, .sidebar-footer, .nav-badge { display: none; }
+            .sidebar .nav-item { justify-content: center; padding: 12px; }
+            .main { margin-left: 60px; padding: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- ============================================================
+             SIDEBAR
+             ============================================================ -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <div class="logo-icon">🔊</div>
+                    <div class="logo-text">
+                        <h1>AcousticNet</h1>
+                        <span>Camada Física</span>
+                    </div>
+                </div>
+            </div>
+
+            <nav>
+                <div class="nav-section">
+                    <div class="nav-section-title">Transmissão</div>
+                    <div class="nav-item active" onclick="showPage('tx1')" id="nav-tx1">
+                        <span class="nav-icon">🥁</span>
+                        <span>Método 1 — Batidas</span>
+                        <span class="nav-badge badge-green">M1</span>
+                    </div>
+                    <div class="nav-item" onclick="showPage('tx2')" id="nav-tx2">
+                        <span class="nav-icon">〰️</span>
+                        <span>Método 2 — FSK</span>
+                        <span class="nav-badge badge-blue">M2</span>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Recepção</div>
+                    <div class="nav-item" onclick="showPage('rx1')" id="nav-rx1">
+                        <span class="nav-icon">🎤</span>
+                        <span>Receber — Batidas</span>
+                        <span class="nav-badge badge-green">M1</span>
+                    </div>
+                    <div class="nav-item" onclick="showPage('rx2')" id="nav-rx2">
+                        <span class="nav-icon">📡</span>
+                        <span>Receber — FSK</span>
+                        <span class="nav-badge badge-blue">M2</span>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Testes</div>
+                    <div class="nav-item" onclick="showPage('demoParity')" id="nav-demoParity">
+                        <span class="nav-icon">✅</span>
+                        <span>Paridade Par</span>
+                        <span class="nav-badge badge-purple">Demo</span>
+                    </div>
+                    <div class="nav-item" onclick="showPage('demoCRC')" id="nav-demoCRC">
+                        <span class="nav-icon">🔐</span>
+                        <span>CRC-8</span>
+                        <span class="nav-badge badge-purple">Demo</span>
+                    </div>
+                </div>
+
+                <div class="nav-section">
+                    <div class="nav-section-title">Referência</div>
+                    <div class="nav-item" onclick="showPage('info')" id="nav-info">
+                        <span class="nav-icon">📖</span>
+                        <span>Informações</span>
+                    </div>
+                </div>
+            </nav>
+
+            <div class="sidebar-footer">
+                Redes de Computadores — UTFPR<br>
+                MIT License · 2026
+            </div>
+        </aside>
+
+        <!-- ============================================================
+             MAIN CONTENT
+             ============================================================ -->
+        <main class="main">
+
+            <!-- ===================== TX METHOD 1 ===================== -->
+            <div class="page active" id="page-tx1">
+                <div class="page-header">
+                    <h2>🥁 Transmitir — Método 1 (Batidas)</h2>
+                    <p>Transmissão por impactos sonoros. Bit 0 = 1 batida, Bit 1 = 2 batidas. Quadro de 9 bits com paridade par.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">⚙️ Configuração</div>
+                    <div class="input-group">
+                        <label>Mensagem para transmitir</label>
+                        <input type="text" class="input-field" id="tx1-message" placeholder="Digite sua mensagem..." maxlength="50" value="Hi">
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" id="tx1-start" onclick="transmitMethod1()">
+                            ▶ Iniciar Transmissão
+                        </button>
+                        <button class="btn btn-outline" onclick="clearConsole('tx1-log')">Limpar Log</button>
+                    </div>
+                </div>
+
+                <div class="stats-grid" id="tx1-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="tx1-chars">—</div>
+                        <div class="stat-label">Caracteres</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="tx1-bits">—</div>
+                        <div class="stat-label">Total Bits</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="tx1-bps">~1.4</div>
+                        <div class="stat-label">bps</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="tx1-time">—</div>
+                        <div class="stat-label">Tempo Est.</div>
+                    </div>
+                </div>
+
+                <div class="progress-bar"><div class="progress-fill" id="tx1-progress"></div></div>
+
+                <div class="card">
+                    <div class="card-title">📋 Log de Transmissão</div>
+                    <div class="console" id="tx1-log"><span class="log-muted">Aguardando transmissão...</span></div>
+                </div>
+            </div>
+
+            <!-- ===================== TX METHOD 2 ===================== -->
+            <div class="page" id="page-tx2">
+                <div class="page-header">
+                    <h2>〰️ Transmitir — Método 2 (FSK)</h2>
+                    <p>Frequency-Shift Keying. Bit 0 = 1200 Hz, Bit 1 = 2400 Hz. Verificação por CRC-8. Taxa de ~20 bps.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">⚙️ Configuração</div>
+                    <div class="input-group">
+                        <label>Mensagem para transmitir</label>
+                        <input type="text" class="input-field" id="tx2-message" placeholder="Digite sua mensagem..." maxlength="100" value="UTFPR">
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" id="tx2-start" onclick="transmitMethod2()">
+                            ▶ Iniciar Transmissão FSK
+                        </button>
+                        <button class="btn btn-outline" onclick="clearConsole('tx2-log')">Limpar Log</button>
+                    </div>
+                </div>
+
+                <div class="stats-grid" id="tx2-stats">
+                    <div class="stat-card">
+                        <div class="stat-value" id="tx2-bytes">—</div>
+                        <div class="stat-label">Bytes</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="tx2-crc">—</div>
+                        <div class="stat-label">CRC-8</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value">20</div>
+                        <div class="stat-label">bps bruto</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="tx2-time">—</div>
+                        <div class="stat-label">Tempo Est.</div>
+                    </div>
+                </div>
+
+                <div class="progress-bar"><div class="progress-fill" id="tx2-progress"></div></div>
+
+                <div class="card">
+                    <div class="card-title">📋 Log de Transmissão</div>
+                    <div class="console" id="tx2-log"><span class="log-muted">Aguardando transmissão FSK...</span></div>
+                </div>
+            </div>
+
+            <!-- ===================== RX METHOD 1 ===================== -->
+            <div class="page" id="page-rx1">
+                <div class="page-header">
+                    <h2>🎤 Receber — Método 1 (Batidas)</h2>
+                    <p>Captura áudio do microfone e detecta batidas. Aguarda sinal de início (3 batidas rápidas).</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🎤 Controles</div>
+                    <div class="btn-group">
+                        <button class="btn btn-success" id="rx1-start" onclick="startReceiveMethod1()">
+                            🎤 Iniciar Escuta
+                        </button>
+                        <button class="btn btn-danger" id="rx1-stop" onclick="stopReceive1()" style="display:none">
+                            ⏹ Parar
+                        </button>
+                        <button class="btn btn-outline" onclick="clearConsole('rx1-log')">Limpar Log</button>
+                    </div>
+                </div>
+
+                <div class="visualizer-container">
+                    <canvas id="rx1-canvas" height="100"></canvas>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="rx1-status">⏸</div>
+                        <div class="stat-label">Status</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="rx1-beats">0</div>
+                        <div class="stat-label">Batidas</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="rx1-decoded">—</div>
+                        <div class="stat-label">Mensagem</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="rx1-rms">0.000</div>
+                        <div class="stat-label">RMS</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📋 Log de Recepção</div>
+                    <div class="console" id="rx1-log"><span class="log-muted">Clique em "Iniciar Escuta" e faça batidas no microfone...</span></div>
+                </div>
+            </div>
+
+            <!-- ===================== RX METHOD 2 ===================== -->
+            <div class="page" id="page-rx2">
+                <div class="page-header">
+                    <h2>📡 Receber — Método 2 (FSK)</h2>
+                    <p>Captura áudio e demodula FSK usando o algoritmo de Goertzel. Aguarda preâmbulo de 1800 Hz.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📡 Controles</div>
+                    <div class="btn-group">
+                        <button class="btn btn-success" id="rx2-start" onclick="startReceiveMethod2()">
+                            📡 Iniciar Escuta FSK
+                        </button>
+                        <button class="btn btn-danger" id="rx2-stop" onclick="stopReceive2()" style="display:none">
+                            ⏹ Parar
+                        </button>
+                        <button class="btn btn-outline" onclick="clearConsole('rx2-log')">Limpar Log</button>
+                    </div>
+                </div>
+
+                <div class="visualizer-container">
+                    <canvas id="rx2-canvas" height="100"></canvas>
+                </div>
+
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-value" id="rx2-status">⏸</div>
+                        <div class="stat-label">Status</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="rx2-freq">—</div>
+                        <div class="stat-label">Freq. Detectada</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="rx2-decoded">—</div>
+                        <div class="stat-label">Mensagem</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-value" id="rx2-crc-status">—</div>
+                        <div class="stat-label">CRC-8</div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📋 Log de Recepção</div>
+                    <div class="console" id="rx2-log"><span class="log-muted">Clique em "Iniciar Escuta FSK" e reproduza um sinal FSK...</span></div>
+                </div>
+            </div>
+
+            <!-- ===================== DEMO PARITY ===================== -->
+            <div class="page" id="page-demoParity">
+                <div class="page-header">
+                    <h2>✅ Demonstração — Paridade Par</h2>
+                    <p>Visualize como a detecção de erros por paridade par funciona. Simule corrupção de bits e veja a detecção em ação.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">⚙️ Teste</div>
+                    <div class="input-group">
+                        <label>Texto para testar</label>
+                        <input type="text" class="input-field" id="parity-input" placeholder="Digite caracteres..." value="HELLO" maxlength="20">
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="demoParity()">▶ Executar Demo</button>
+                        <button class="btn btn-danger" onclick="demoParityCorrupt()">💥 Simular Corrupção</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📊 Quadros Íntegros</div>
+                    <div style="overflow-x:auto">
+                        <table class="demo-table" id="parity-table-ok">
+                            <thead>
+                                <tr>
+                                    <th>Char</th>
+                                    <th>ASCII</th>
+                                    <th>Dados (8 bits)</th>
+                                    <th>Nº de 1s</th>
+                                    <th>Paridade</th>
+                                    <th>Quadro (9 bits)</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card" id="parity-corrupt-card" style="display:none">
+                    <div class="card-title">💥 Quadros Corrompidos (1 bit invertido)</div>
+                    <div style="overflow-x:auto">
+                        <table class="demo-table" id="parity-table-corrupt">
+                            <thead>
+                                <tr>
+                                    <th>Char</th>
+                                    <th>Original</th>
+                                    <th>Corrompido</th>
+                                    <th>Bit Alterado</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== DEMO CRC ===================== -->
+            <div class="page" id="page-demoCRC">
+                <div class="page-header">
+                    <h2>🔐 Demonstração — CRC-8</h2>
+                    <p>Visualize o cálculo do CRC-8 (Cyclic Redundancy Check) e a detecção de dados corrompidos.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">⚙️ Teste</div>
+                    <div class="input-group">
+                        <label>Mensagens para testar (separadas por vírgula)</label>
+                        <input type="text" class="input-field" id="crc-input" placeholder="msg1, msg2, ..." value="Hi, UTFPR, Redes, OK">
+                    </div>
+                    <div class="btn-group">
+                        <button class="btn btn-primary" onclick="demoCRC()">▶ Calcular CRC-8</button>
+                        <button class="btn btn-danger" onclick="demoCRCCorrupt()">💥 Simular Corrupção</button>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">📊 Dados Íntegros</div>
+                    <div style="overflow-x:auto">
+                        <table class="demo-table" id="crc-table-ok">
+                            <thead>
+                                <tr>
+                                    <th>Mensagem</th>
+                                    <th>Hex</th>
+                                    <th>CRC-8</th>
+                                    <th>CRC Binário</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card" id="crc-corrupt-card" style="display:none">
+                    <div class="card-title">💥 Dados Corrompidos</div>
+                    <div style="overflow-x:auto">
+                        <table class="demo-table" id="crc-table-corrupt">
+                            <thead>
+                                <tr>
+                                    <th>Mensagem</th>
+                                    <th>Original Hex</th>
+                                    <th>Corrompido Hex</th>
+                                    <th>CRC Original</th>
+                                    <th>CRC Recalculado</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===================== INFO ===================== -->
+            <div class="page" id="page-info">
+                <div class="page-header">
+                    <h2>📖 Informações dos Métodos</h2>
+                    <p>Referência técnica sobre os métodos de transmissão, detecção de erros e parâmetros de áudio.</p>
+                </div>
+
+                <div class="card">
+                    <div class="card-title">🌐 Modelo OSI — 7 Camadas</div>
+                    <table class="osi-table">
+                        <tr><td>7</td><td>Aplicação</td><td>HTTP, FTP, DNS, SSH</td></tr>
+                        <tr><td>6</td><td>Apresentação</td><td>SSL/TLS, JPEG, ASCII</td></tr>
+                        <tr><td>5</td><td>Sessão</td><td>NetBIOS, RPC</td></tr>
+                        <tr><td>4</td><td>Transporte</td><td>TCP, UDP</td></tr>
+                        <tr><td>3</td><td>Rede</td><td>IP, ICMP, ARP</td></tr>
+                        <tr><td>2</td><td>Enlace de Dados</td><td>Ethernet, Wi-Fi</td></tr>
+                        <tr><td>1</td><td>Física ← Este projeto</td><td>Cabos, rádio, SOM</td></tr>
+                    </table>
+                </div>
+
+                <div class="info-grid">
+                    <div class="info-card">
+                        <h3>🥁 Método 1 — Batidas</h3>
+                        <div class="info-row"><span class="info-label">Tipo</span><span class="info-value">OOK (On-Off Keying)</span></div>
+                        <div class="info-row"><span class="info-label">Bit 0</span><span class="info-value">1 batida</span></div>
+                        <div class="info-row"><span class="info-label">Bit 1</span><span class="info-value">2 batidas</span></div>
+                        <div class="info-row"><span class="info-label">Frequência</span><span class="info-value">800 Hz</span></div>
+                        <div class="info-row"><span class="info-label">Intervalo/bit</span><span class="info-value">700 ms</span></div>
+                        <div class="info-row"><span class="info-label">Taxa</span><span class="info-value">~1.4 bps</span></div>
+                        <div class="info-row"><span class="info-label">Quadro</span><span class="info-value">9 bits (8+1)</span></div>
+                        <div class="info-row"><span class="info-label">Erro</span><span class="info-value">Paridade Par</span></div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>〰️ Método 2 — FSK</h3>
+                        <div class="info-row"><span class="info-label">Tipo</span><span class="info-value">Frequency-Shift Keying</span></div>
+                        <div class="info-row"><span class="info-label">Bit 0</span><span class="info-value">1200 Hz</span></div>
+                        <div class="info-row"><span class="info-label">Bit 1</span><span class="info-value">2400 Hz</span></div>
+                        <div class="info-row"><span class="info-label">Duração/bit</span><span class="info-value">50 ms</span></div>
+                        <div class="info-row"><span class="info-label">Taxa bruta</span><span class="info-value">20 bps</span></div>
+                        <div class="info-row"><span class="info-label">Preâmbulo</span><span class="info-value">1800 Hz</span></div>
+                        <div class="info-row"><span class="info-label">Fim</span><span class="info-value">3000 Hz</span></div>
+                        <div class="info-row"><span class="info-label">Erro</span><span class="info-value">CRC-8 (0x07)</span></div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>🔊 Parâmetros de Áudio</h3>
+                        <div class="info-row"><span class="info-label">Amostragem</span><span class="info-value">44100 Hz</span></div>
+                        <div class="info-row"><span class="info-label">Canais</span><span class="info-value">Mono</span></div>
+                        <div class="info-row"><span class="info-label">Resolução</span><span class="info-value">16 bits</span></div>
+                        <div class="info-row"><span class="info-label">Nyquist</span><span class="info-value">22050 Hz</span></div>
+                        <div class="info-row"><span class="info-label">Limiar RMS</span><span class="info-value">0.02</span></div>
+                        <div class="info-row"><span class="info-label">Buffer</span><span class="info-value">1024 samples</span></div>
+                        <div class="info-row"><span class="info-label">Latência</span><span class="info-value">~23 ms</span></div>
+                        <div class="info-row"><span class="info-label">API</span><span class="info-value">Web Audio API</span></div>
+                    </div>
+
+                    <div class="info-card">
+                        <h3>🛡️ Detecção de Erros</h3>
+                        <div class="info-row"><span class="info-label">Paridade Par</span><span class="info-value">1 bit overhead</span></div>
+                        <div class="info-row"><span class="info-label">Par. Detecta</span><span class="info-value">Erros de 1 bit</span></div>
+                        <div class="info-row"><span class="info-label">Par. Não detecta</span><span class="info-value">Erros de 2 bits</span></div>
+                        <div class="info-row"><span class="info-label">CRC-8 Polinômio</span><span class="info-value">x⁸+x²+x+1</span></div>
+                        <div class="info-row"><span class="info-label">CRC Burst</span><span class="info-value">Até 8 bits</span></div>
+                        <div class="info-row"><span class="info-label">CRC Aleatório</span><span class="info-value">99.6%</span></div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <!-- ============================================================
+         JAVASCRIPT
+         ============================================================ -->
+    <script>
+    // ================================================================
+    // CONFIG (espelha config.py)
+    // ================================================================
+    const CONFIG = {
+        SAMPLE_RATE: 44100,
+        BEAT_DURATION: 0.08,
+        BEAT_SILENCE: 0.25,
+        BIT_INTERVAL: 0.7,
+        BEAT_FREQUENCY: 800,
+        BEAT_AMPLITUDE: 0.9,
+        BEAT_ENERGY_THRESHOLD: 0.004,
+        BEAT_MIN_SILENCE_MS: 80,
+        FSK_FREQ_0: 1200,
+        FSK_FREQ_1: 2400,
+        FSK_BIT_DURATION: 0.05,
+        FSK_AMPLITUDE: 0.8,
+        FSK_PREAMBLE_FREQ: 1800,
+        FSK_PREAMBLE_DURATION: 0.3,
+        FSK_END_FREQ: 3000,
+        FSK_END_DURATION: 0.2,
+        CRC8_POLYNOMIAL: 0x07,
+    };
+
+    // ================================================================
+    // ERROR HANDLER — captura erros para depuração
+    // ================================================================
+    window.onerror = function(msg, url, line, col, error) {
+        console.error('AcousticNet Error:', msg, 'at line', line);
+        return false;
+    };
+
+    // ================================================================
+    // NAVIGATION
+    // ================================================================
+    window.showPage = function(pageId) {
+        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+        document.getElementById('page-' + pageId).classList.add('active');
+        document.getElementById('nav-' + pageId).classList.add('active');
+    };
+
+    window.clearConsole = function(id) {
+        document.getElementById(id).innerHTML = '<span class="log-muted">Limpo.</span>';
+    };
+
+    // ================================================================
+    // ERROR DETECTION (espelha error_detection.py)
+    // ================================================================
+    function charToBits(char) {
+        const code = char.charCodeAt(0) & 0xFF;
+        return Array.from({length: 8}, (_, i) => (code >> (7 - i)) & 1);
+    }
+
+    function bitsToChar(bits) {
+        let val = 0;
+        for (const b of bits) val = (val << 1) | b;
+        return String.fromCharCode(val);
+    }
+
+    function byteToBits(byte) {
+        return Array.from({length: 8}, (_, i) => (byte >> (7 - i)) & 1);
+    }
+
+    function bitsToByte(bits) {
+        let val = 0;
+        for (const b of bits) val = (val << 1) | b;
+        return val;
+    }
+
+    function calculateEvenParity(dataBits) {
+        const ones = dataBits.reduce((s, b) => s + b, 0);
+        return ones % 2 === 0 ? 0 : 1;
+    }
+
+    function buildParityFrame(dataBits) {
+        return [...dataBits, calculateEvenParity(dataBits)];
+    }
+
+    function verifyParityFrame(frameBits) {
+        const data = frameBits.slice(0, 8);
+        const recvParity = frameBits[8];
+        const expectedParity = calculateEvenParity(data);
+        return { data, ok: recvParity === expectedParity };
+    }
+
+    function calculateCRC8(dataBytes) {
+        let crc = 0x00;
+        for (const byte of dataBytes) {
+            crc ^= byte;
+            for (let i = 0; i < 8; i++) {
+                if (crc & 0x80) crc = ((crc << 1) ^ CONFIG.CRC8_POLYNOMIAL) & 0xFF;
+                else crc = (crc << 1) & 0xFF;
+            }
+        }
+        return crc;
+    }
+
+    function verifyCRC8(dataBytes, receivedCRC) {
+        return calculateCRC8(dataBytes) === receivedCRC;
+    }
+
+    function strToBytes(str) {
+        return Array.from(new TextEncoder().encode(str));
+    }
+
+    // ================================================================
+    // LOGGING HELPER
+    // ================================================================
+    function log(consoleId, text, cls = '') {
+        const el = document.getElementById(consoleId);
+        if (el.querySelector('.log-muted:only-child')) el.innerHTML = '';
+        const line = document.createElement('div');
+        line.className = cls;
+        line.innerHTML = text;
+        el.appendChild(line);
+        el.scrollTop = el.scrollHeight;
+    }
+
+    function formatBits(bits) {
+        return bits.map(b => b === 1
+            ? `<span class="bit-1">${b}</span>`
+            : `<span class="bit-0">${b}</span>`
+        ).join('');
+    }
+
+    // ================================================================
+    // AUDIO CONTEXT
+    // ================================================================
+    let audioCtx = null;
+    function getAudioCtx() {
+        if (!audioCtx || audioCtx.state === 'closed') {
+            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        }
+        if (audioCtx.state === 'suspended') audioCtx.resume();
+        return audioCtx;
+    }
+
+    // ================================================================
+    // TRANSMITTER METHOD 1 (Batidas)
+    // ================================================================
+    window.transmitMethod1 = async function() {
+        const msg = document.getElementById('tx1-message').value.trim();
+        if (!msg) return;
+
+        const btn = document.getElementById('tx1-start');
+        btn.disabled = true;
+        const ctx = getAudioCtx();
+
+        const totalBits = msg.length * 9;
+        document.getElementById('tx1-chars').textContent = msg.length;
+        document.getElementById('tx1-bits').textContent = totalBits;
+        const estTime = (3 * 0.23 + 1 + msg.length * (9 * CONFIG.BIT_INTERVAL + 0.5) + 1 + 4 * 0.23);
+        document.getElementById('tx1-time').textContent = estTime.toFixed(1) + 's';
+
+        const consoleId = 'tx1-log';
+        clearConsole(consoleId);
+        log(consoleId, '═══ TRANSMISSÃO — MÉTODO 1 (BATIDAS) ═══', 'log-info log-bold');
+        log(consoleId, `Mensagem: "${msg}" | ${msg.length} caracteres | ${totalBits} bits`, 'log-info');
+        log(consoleId, '');
+
+        function createBeat(startTime) {
+            const dur = CONFIG.BEAT_DURATION;
+            const osc1 = ctx.createOscillator(); osc1.frequency.value = 800;
+            const osc2 = ctx.createOscillator(); osc2.frequency.value = 1600;
+            const osc3 = ctx.createOscillator(); osc3.frequency.value = 2400;
+            const g1 = ctx.createGain(); g1.gain.value = 0;
+            const g2 = ctx.createGain(); g2.gain.value = 0;
+            const g3 = ctx.createGain(); g3.gain.value = 0;
+
+            // Envoltória de batida
+            const amp = CONFIG.BEAT_AMPLITUDE;
+            [g1, g2, g3].forEach((g, i) => {
+                const level = [0.5, 0.3, 0.2][i] * amp;
+                g.gain.setValueAtTime(level, startTime);
+                g.gain.exponentialRampToValueAtTime(0.001, startTime + dur);
+            });
+
+            osc1.connect(g1).connect(ctx.destination);
+            osc2.connect(g2).connect(ctx.destination);
+            osc3.connect(g3).connect(ctx.destination);
+
+            [osc1, osc2, osc3].forEach(o => { o.start(startTime); o.stop(startTime + dur); });
+        }
+
+        let t = ctx.currentTime + 0.1;
+
+        // Sinal de início: 3 batidas rápidas
+        log(consoleId, '▶ Sinal de início (3 batidas rápidas)...', 'log-warn');
+        for (let i = 0; i < 3; i++) { createBeat(t); t += 0.23; }
+        t += 1.0;
+
+        let bitIndex = 0;
+        // Transmite cada caractere
+        for (let ci = 0; ci < msg.length; ci++) {
+            const char = msg[ci];
+            const dataBits = charToBits(char);
+            const frame = buildParityFrame(dataBits);
+
+            const bitsHtml = formatBits(dataBits);
+            log(consoleId, `  Char '${char}' (ASCII ${char.charCodeAt(0)}) → Dados: [${bitsHtml}] Paridade: <span class="log-warn">${frame[8]}</span>`, 'log-success');
+
+            for (const bit of frame) {
+                if (bit === 0) {
+                    t += CONFIG.BEAT_SILENCE;
+                    createBeat(t); t += CONFIG.BEAT_DURATION;
+                    t += CONFIG.BIT_INTERVAL - CONFIG.BEAT_SILENCE - CONFIG.BEAT_DURATION;
+                } else {
+                    t += CONFIG.BEAT_SILENCE;
+                    createBeat(t); t += CONFIG.BEAT_DURATION;
+                    t += CONFIG.BEAT_SILENCE;
+                    createBeat(t); t += CONFIG.BEAT_DURATION;
+                    t += CONFIG.BIT_INTERVAL - 2 * CONFIG.BEAT_SILENCE - 2 * CONFIG.BEAT_DURATION;
+                }
+                bitIndex++;
+            }
+            t += 0.5; // pausa entre caracteres
+        }
+
+        // Sinal de fim: 4 batidas rápidas
+        t += 1.0;
+        log(consoleId, '');
+        log(consoleId, '▶ Sinal de fim (4 batidas rápidas)...', 'log-warn');
+        for (let i = 0; i < 4; i++) { createBeat(t); t += 0.23; }
+
+        const totalTime = t - ctx.currentTime;
+
+        // Progress bar animation
+        const prog = document.getElementById('tx1-progress');
+        const startT = Date.now();
+        const dur = totalTime * 1000;
+        function updateProg() {
+            const pct = Math.min(100, ((Date.now() - startT) / dur) * 100);
+            prog.style.width = pct + '%';
+            if (pct < 100) requestAnimationFrame(updateProg);
+        }
+        updateProg();
+
+        setTimeout(() => {
+            log(consoleId, '');
+            log(consoleId, '✓ TRANSMISSÃO MÉTODO 1 CONCLUÍDA COM SUCESSO', 'log-success log-bold');
+            log(consoleId, `  Tempo total: ${totalTime.toFixed(2)}s`, 'log-info');
+            btn.disabled = false;
+            prog.style.width = '100%';
+        }, totalTime * 1000);
+    }
+
+    // ================================================================
+    // TRANSMITTER METHOD 2 (FSK)
+    // ================================================================
+    window.transmitMethod2 = async function() {
+        const msg = document.getElementById('tx2-message').value.trim();
+        if (!msg) return;
+
+        const btn = document.getElementById('tx2-start');
+        btn.disabled = true;
+        const ctx = getAudioCtx();
+
+        const dataBytes = strToBytes(msg);
+        const crc = calculateCRC8(dataBytes);
+        const crcBits = byteToBits(crc);
+        const totalDataBits = dataBytes.length * 8;
+        const totalBits = totalDataBits + 8;
+
+        document.getElementById('tx2-bytes').textContent = dataBytes.length;
+        document.getElementById('tx2-crc').textContent = '0x' + crc.toString(16).toUpperCase().padStart(2, '0');
+
+        const consoleId = 'tx2-log';
+        clearConsole(consoleId);
+        log(consoleId, '═══ TRANSMISSÃO — MÉTODO 2 (FSK) ═══', 'log-info log-bold');
+        log(consoleId, `Mensagem: "${msg}" | ${dataBytes.length} bytes | CRC-8: 0x${crc.toString(16).toUpperCase().padStart(2,'0')}`, 'log-info');
+        log(consoleId, `Frequências: Bit 0 = ${CONFIG.FSK_FREQ_0} Hz | Bit 1 = ${CONFIG.FSK_FREQ_1} Hz`, 'log-info');
+        log(consoleId, '');
+
+        function playTone(freq, startTime, duration) {
+            const osc = ctx.createOscillator();
+            osc.frequency.value = freq;
+            osc.type = 'sine';
+            const gain = ctx.createGain();
+            const fadeTime = 0.005;
+            gain.gain.setValueAtTime(0, startTime);
+            gain.gain.linearRampToValueAtTime(CONFIG.FSK_AMPLITUDE, startTime + fadeTime);
+            gain.gain.setValueAtTime(CONFIG.FSK_AMPLITUDE, startTime + duration - fadeTime);
+            gain.gain.linearRampToValueAtTime(0, startTime + duration);
+            osc.connect(gain).connect(ctx.destination);
+            osc.start(startTime);
+            osc.stop(startTime + duration);
+        }
+
+        let t = ctx.currentTime + 0.1;
+
+        // 1. Preâmbulo
+        log(consoleId, `▶ Preâmbulo (${CONFIG.FSK_PREAMBLE_FREQ} Hz, ${CONFIG.FSK_PREAMBLE_DURATION}s)...`, 'log-warn');
+        playTone(CONFIG.FSK_PREAMBLE_FREQ, t, CONFIG.FSK_PREAMBLE_DURATION);
+        t += CONFIG.FSK_PREAMBLE_DURATION + 0.05;
+
+        // 2. Dados
+        for (let i = 0; i < dataBytes.length; i++) {
+            const bits = byteToBits(dataBytes[i]);
+            const ch = dataBytes[i] >= 32 && dataBytes[i] < 127 ? String.fromCharCode(dataBytes[i]) : '?';
+            log(consoleId, `  Byte ${i+1}/${dataBytes.length}: '${ch}' (0x${dataBytes[i].toString(16).toUpperCase().padStart(2,'0')}) → [${formatBits(bits)}]`, 'log-success');
+            for (const bit of bits) {
+                const freq = bit === 0 ? CONFIG.FSK_FREQ_0 : CONFIG.FSK_FREQ_1;
+                playTone(freq, t, CONFIG.FSK_BIT_DURATION);
+                t += CONFIG.FSK_BIT_DURATION;
+            }
+        }
+
+        // 3. CRC
+        log(consoleId, `  CRC-8: [${formatBits(crcBits)}] (0x${crc.toString(16).toUpperCase().padStart(2,'0')})`, 'log-warn');
+        for (const bit of crcBits) {
+            const freq = bit === 0 ? CONFIG.FSK_FREQ_0 : CONFIG.FSK_FREQ_1;
+            playTone(freq, t, CONFIG.FSK_BIT_DURATION);
+            t += CONFIG.FSK_BIT_DURATION;
+        }
+
+        // 4. Fim
+        t += 0.05;
+        playTone(CONFIG.FSK_END_FREQ, t, CONFIG.FSK_END_DURATION);
+        t += CONFIG.FSK_END_DURATION;
+
+        const totalTime = t - ctx.currentTime;
+        document.getElementById('tx2-time').textContent = totalTime.toFixed(2) + 's';
+
+        const prog = document.getElementById('tx2-progress');
+        const startT = Date.now();
+        const dur = totalTime * 1000;
+        function up() {
+            const pct = Math.min(100, ((Date.now() - startT) / dur) * 100);
+            prog.style.width = pct + '%';
+            if (pct < 100) requestAnimationFrame(up);
+        }
+        up();
+
+        setTimeout(() => {
+            log(consoleId, '');
+            log(consoleId, `✓ TRANSMISSÃO FSK CONCLUÍDA | Tempo: ${totalTime.toFixed(2)}s | Taxa efetiva: ${(totalDataBits / totalTime).toFixed(1)} bps`, 'log-success log-bold');
+            btn.disabled = false;
+            prog.style.width = '100%';
+        }, totalTime * 1000);
+    }
+
+    // ================================================================
+    // RECEIVER METHOD 1 (Batidas)
+    // ================================================================
+    let rx1Active = false;
+    let rx1Stream = null;
+    let rx1AnimFrame = null;
+
+    window.startReceiveMethod1 = async function() {
+        if (rx1Active) return;
+        try {
+            rx1Stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        } catch (e) {
+            log('rx1-log', '✗ Erro ao acessar microfone: ' + e.message, 'log-error');
+            return;
+        }
+
+        rx1Active = true;
+        document.getElementById('rx1-start').style.display = 'none';
+        document.getElementById('rx1-stop').style.display = '';
+        document.getElementById('rx1-status').textContent = '🔴';
+        document.getElementById('rx1-status').classList.add('pulsing');
+
+        const ctx = getAudioCtx();
+        const source = ctx.createMediaStreamSource(rx1Stream);
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 2048;
+        source.connect(analyser);
+
+        const bufLen = analyser.fftSize;
+        const dataArray = new Float32Array(bufLen);
+        const canvas = document.getElementById('rx1-canvas');
+        const canvasCtx = canvas.getContext('2d');
+        canvas.width = canvas.clientWidth * 2;
+        canvas.height = 200;
+
+        let beatCount = 0;
+        let lastBeatTime = 0;
+        let inBeat = false;
+        let frameBits = [];
+        let message = '';
+        let charCount = 0;
+        let startDetected = false;
+        let startBeatCount = 0;
+        let silentFrames = 0;
+        let bitWindowStart = 0;
+        let bitBeats = 0;
+        let bitWindowActive = false;
+        const consoleId = 'rx1-log';
+
+        clearConsole(consoleId);
+        log(consoleId, '═══ RECEPÇÃO — MÉTODO 1 (BATIDAS) ═══', 'log-info log-bold');
+        log(consoleId, 'Aguardando sinal de início (3 batidas rápidas)...', 'log-warn');
+
+        function processFrame() {
+            if (!rx1Active) return;
+            rx1AnimFrame = requestAnimationFrame(processFrame);
+
+            analyser.getFloatTimeDomainData(dataArray);
+
+            // Calculate RMS
+            let sum = 0;
+            for (let i = 0; i < bufLen; i++) sum += dataArray[i] * dataArray[i];
+            const rms = Math.sqrt(sum / bufLen);
+            document.getElementById('rx1-rms').textContent = rms.toFixed(4);
+
+            // Draw waveform
+            canvasCtx.fillStyle = '#0d1225';
+            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+            canvasCtx.lineWidth = 2;
+            canvasCtx.strokeStyle = rms > CONFIG.BEAT_ENERGY_THRESHOLD ? '#10b981' : '#3b82f6';
+            canvasCtx.beginPath();
+            const sliceWidth = canvas.width / bufLen;
+            let x = 0;
+            for (let i = 0; i < bufLen; i++) {
+                const v = dataArray[i];
+                const y = (v + 1) / 2 * canvas.height;
+                if (i === 0) canvasCtx.moveTo(x, y);
+                else canvasCtx.lineTo(x, y);
+                x += sliceWidth;
+            }
+            canvasCtx.stroke();
+
+            // Threshold line
+            canvasCtx.strokeStyle = 'rgba(239,68,68,0.3)';
+            canvasCtx.setLineDash([5, 5]);
+            const thY = canvas.height / 2 - CONFIG.BEAT_ENERGY_THRESHOLD * canvas.height;
+            canvasCtx.beginPath();
+            canvasCtx.moveTo(0, thY);
+            canvasCtx.lineTo(canvas.width, thY);
+            canvasCtx.stroke();
+            canvasCtx.setLineDash([]);
+
+            const now = performance.now();
+
+            // Beat detection
+            if (rms > CONFIG.BEAT_ENERGY_THRESHOLD) {
+                if (!inBeat && (now - lastBeatTime > CONFIG.BEAT_MIN_SILENCE_MS)) {
+                    inBeat = true;
+                    beatCount++;
+                    lastBeatTime = now;
+                    document.getElementById('rx1-beats').textContent = beatCount;
+
+                    if (!startDetected) {
+                        if (now - (lastBeatTime - 1) < 500 || startBeatCount === 0) {
+                            startBeatCount++;
+                        } else {
+                            startBeatCount = 1;
+                        }
+                        if (startBeatCount >= 3) {
+                            startDetected = true;
+                            log(consoleId, '✓ Sinal de início detectado! Recebendo dados...', 'log-success log-bold');
+                            log(consoleId, '');
+                            silentFrames = 0;
+                        }
+                    } else {
+                        // Contando batidas na janela
+                        if (!bitWindowActive) {
+                            bitWindowActive = true;
+                            bitWindowStart = now;
+                            bitBeats = 1;
+                        } else {
+                            bitBeats++;
+                        }
+                    }
+                }
+            } else {
+                inBeat = false;
+
+                if (startDetected && bitWindowActive && (now - bitWindowStart > CONFIG.BIT_INTERVAL * 1000 * 0.8)) {
+                    // Janela expirou, decodifica bit
+                    const bit = bitBeats >= 2 ? 1 : 0;
+                    frameBits.push(bit);
+                    bitWindowActive = false;
+                    bitBeats = 0;
+                    silentFrames = 0;
+
+                    if (frameBits.length === 9) {
+                        const { data, ok } = verifyParityFrame(frameBits);
+                        const ch = bitsToChar(data);
+                        charCount++;
+
+                        if (ok) {
+                            message += ch;
+                            log(consoleId, `  <span class="log-success">[SUCESSO]</span> Char #${charCount}: '${ch}' (ASCII ${ch.charCodeAt(0)}) Dados: [${formatBits(data)}] Paridade: <span class="log-warn">${frameBits[8]}</span> ✓`);
+                        } else {
+                            message += '?';
+                            log(consoleId, `  <span class="log-error">[FALHA DE TRANSMISSÃO]</span> Char #${charCount}: Dados: [${formatBits(data)}] Paridade: <span class="log-error">${frameBits[8]}</span> ✗ Erro de paridade!`);
+                        }
+                        document.getElementById('rx1-decoded').textContent = message || '—';
+                        frameBits = [];
+                    }
+                }
+
+                if (startDetected && !bitWindowActive) {
+                    silentFrames++;
+                    if (silentFrames > 200) {
+                        log(consoleId, '');
+                        log(consoleId, `═══ RESULTADO: "${message}" (${charCount} chars) ═══`, 'log-info log-bold');
+                        stopReceive1();
+                    }
+                }
+            }
+        }
+
+        processFrame();
+    }
+
+    window.stopReceive1 = function() {
+        rx1Active = false;
+        if (rx1AnimFrame) cancelAnimationFrame(rx1AnimFrame);
+        if (rx1Stream) { rx1Stream.getTracks().forEach(t => t.stop()); rx1Stream = null; }
+        document.getElementById('rx1-start').style.display = '';
+        document.getElementById('rx1-stop').style.display = 'none';
+        document.getElementById('rx1-status').textContent = '⏸';
+        document.getElementById('rx1-status').classList.remove('pulsing');
+    };
+
+    // ================================================================
+    // RECEIVER METHOD 2 (FSK)
+    // ================================================================
+    let rx2Active = false;
+    let rx2Stream = null;
+    let rx2AnimFrame = null;
+
+    function goertzel(samples, targetFreq, sampleRate) {
+        const n = samples.length;
+        const k = Math.round(n * targetFreq / sampleRate);
+        const omega = (2 * Math.PI * k) / n;
+        const coeff = 2 * Math.cos(omega);
+        let s1 = 0, s2 = 0;
+        for (let i = 0; i < n; i++) {
+            const s0 = samples[i] + coeff * s1 - s2;
+            s2 = s1;
+            s1 = s0;
+        }
+        return Math.sqrt(s1 * s1 + s2 * s2 - coeff * s1 * s2) / n;
+    }
+
+    window.startReceiveMethod2 = async function() {
+        if (rx2Active) return;
+        try {
+            rx2Stream = await navigator.mediaDevices.getUserMedia({ audio: { sampleRate: 44100 } });
+        } catch (e) {
+            log('rx2-log', '✗ Erro ao acessar microfone: ' + e.message, 'log-error');
+            return;
+        }
+
+        rx2Active = true;
+        document.getElementById('rx2-start').style.display = 'none';
+        document.getElementById('rx2-stop').style.display = '';
+        document.getElementById('rx2-status').textContent = '🔴';
+        document.getElementById('rx2-status').classList.add('pulsing');
+
+        const ctx = getAudioCtx();
+        const source = ctx.createMediaStreamSource(rx2Stream);
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 4096;
+        source.connect(analyser);
+
+        const bufLen = analyser.fftSize;
+        const dataArray = new Float32Array(bufLen);
+        const canvas = document.getElementById('rx2-canvas');
+        const canvasCtx = canvas.getContext('2d');
+        canvas.width = canvas.clientWidth * 2;
+        canvas.height = 200;
+
+        let preambleDetected = false;
+        let preambleCount = 0;
+        let allBits = [];
+        let lowEnergyCount = 0;
+        const consoleId = 'rx2-log';
+
+        clearConsole(consoleId);
+        log(consoleId, '═══ RECEPÇÃO — MÉTODO 2 (FSK) ═══', 'log-info log-bold');
+        log(consoleId, `Aguardando preâmbulo (${CONFIG.FSK_PREAMBLE_FREQ} Hz)...`, 'log-warn');
+
+        function processFrame() {
+            if (!rx2Active) return;
+            rx2AnimFrame = requestAnimationFrame(processFrame);
+
+            analyser.getFloatTimeDomainData(dataArray);
+
+            // RMS
+            let sum = 0;
+            for (let i = 0; i < bufLen; i++) sum += dataArray[i] * dataArray[i];
+            const rms = Math.sqrt(sum / bufLen);
+
+            // Draw frequency spectrum
+            const freqData = new Uint8Array(analyser.frequencyBinCount);
+            analyser.getByteFrequencyData(freqData);
+            canvasCtx.fillStyle = '#0d1225';
+            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+            canvasCtx.fillStyle = '#3b82f640';
+            const barW = canvas.width / (freqData.length * 0.15);
+            for (let i = 0; i < freqData.length * 0.15; i++) {
+                const barH = (freqData[i] / 255) * canvas.height;
+                canvasCtx.fillRect(i * barW, canvas.height - barH, barW - 1, barH);
+            }
+
+            // Goertzel for key frequencies
+            const mag0 = goertzel(dataArray, CONFIG.FSK_FREQ_0, ctx.sampleRate);
+            const mag1 = goertzel(dataArray, CONFIG.FSK_FREQ_1, ctx.sampleRate);
+            const magPre = goertzel(dataArray, CONFIG.FSK_PREAMBLE_FREQ, ctx.sampleRate);
+            const magEnd = goertzel(dataArray, CONFIG.FSK_END_FREQ, ctx.sampleRate);
+
+            const maxMag = Math.max(mag0, mag1, magPre, magEnd);
+            let detectedFreq = '—';
+            if (maxMag > 0.005) {
+                if (magPre === maxMag) detectedFreq = CONFIG.FSK_PREAMBLE_FREQ + ' Hz (Preâmbulo)';
+                else if (mag0 === maxMag) detectedFreq = CONFIG.FSK_FREQ_0 + ' Hz (Bit 0)';
+                else if (mag1 === maxMag) detectedFreq = CONFIG.FSK_FREQ_1 + ' Hz (Bit 1)';
+                else if (magEnd === maxMag) detectedFreq = CONFIG.FSK_END_FREQ + ' Hz (Fim)';
+            }
+            document.getElementById('rx2-freq').textContent = detectedFreq;
+
+            if (rms < 0.002) {
+                lowEnergyCount++;
+                if (preambleDetected && lowEnergyCount > 30 && allBits.length > 0) {
+                    decodeFSK(allBits, consoleId);
+                    stopReceive2();
+                }
+                return;
+            }
+            lowEnergyCount = 0;
+
+            if (!preambleDetected) {
+                if (magPre > mag0 && magPre > mag1 && magPre > 0.001) {
+                    preambleCount++;
+                    if (preambleCount >= 3) {
+                        preambleDetected = true;
+                        log(consoleId, '✓ Preâmbulo detectado! Demodulando...', 'log-success log-bold');
+                    }
+                } else {
+                    preambleCount = 0;
+                }
+            } else {
+                // Detecta fim
+                if (magEnd > mag0 && magEnd > mag1 && magEnd > 0.001) {
+                    decodeFSK(allBits, consoleId);
+                    stopReceive2();
+                    return;
+                }
+                // Classifica bit
+                if (mag0 > 0.0005 || mag1 > 0.0005) {
+                    const bit = mag0 > mag1 ? 0 : 1;
+                    allBits.push(bit);
+                }
+            }
+        }
+
+        processFrame();
+    }
+
+    function decodeFSK(allBits, consoleId) {
+        log(consoleId, '');
+        if (allBits.length < 16) {
+            log(consoleId, `✗ Dados insuficientes: ${allBits.length} bits`, 'log-error');
+            return;
+        }
+
+        const dataBits = allBits.slice(0, -8);
+        const crcBits = allBits.slice(-8);
+        const dataBytes = [];
+        for (let i = 0; i + 8 <= dataBits.length; i += 8) {
+            dataBytes.push(bitsToByte(dataBits.slice(i, i + 8)));
+        }
+
+        const recvCRC = bitsToByte(crcBits);
+        const calcCRC = calculateCRC8(dataBytes);
+        const ok = recvCRC === calcCRC;
+
+        let msg = '';
+        for (const b of dataBytes) {
+            const ch = b >= 32 && b < 127 ? String.fromCharCode(b) : '?';
+            msg += ch;
+            log(consoleId, `  Byte: '${ch}' (0x${b.toString(16).toUpperCase().padStart(2,'0')}) ← [${formatBits(byteToBits(b))}]`, 'log-success');
+        }
+
+        log(consoleId, '');
+        log(consoleId, `CRC-8 recebido:  0x${recvCRC.toString(16).toUpperCase().padStart(2,'0')}`, 'log-warn');
+        log(consoleId, `CRC-8 calculado: 0x${calcCRC.toString(16).toUpperCase().padStart(2,'0')}`, 'log-warn');
+
+        if (ok) {
+            log(consoleId, '');
+            log(consoleId, `✓ SUCESSO — DADOS ÍNTEGROS (CRC-8 VÁLIDO) | Mensagem: "${msg}"`, 'log-success log-bold');
+            document.getElementById('rx2-crc-status').textContent = '✓ OK';
+        } else {
+            log(consoleId, '');
+            log(consoleId, `✗ FALHA DE TRANSMISSÃO — CRC-8 INVÁLIDO | Mensagem: "${msg}"`, 'log-error log-bold');
+            document.getElementById('rx2-crc-status').textContent = '✗ ERRO';
+        }
+
+        document.getElementById('rx2-decoded').textContent = msg;
+    }
+
+    window.stopReceive2 = function() {
+        rx2Active = false;
+        if (rx2AnimFrame) cancelAnimationFrame(rx2AnimFrame);
+        if (rx2Stream) { rx2Stream.getTracks().forEach(t => t.stop()); rx2Stream = null; }
+        document.getElementById('rx2-start').style.display = '';
+        document.getElementById('rx2-stop').style.display = 'none';
+        document.getElementById('rx2-status').textContent = '⏸';
+        document.getElementById('rx2-status').classList.remove('pulsing');
+    };
+
+    // ================================================================
+    // DEMO PARITY
+    // ================================================================
+    window.demoParity = function() {
+        try {
+            const input = document.getElementById('parity-input').value.trim();
+            if (!input) { alert('Digite algo no campo de texto!'); return; }
+
+            const tbody = document.querySelector('#parity-table-ok tbody');
+            tbody.innerHTML = '';
+
+            for (let ci = 0; ci < input.length; ci++) {
+                const char = input[ci];
+                const bits = charToBits(char);
+                const frame = buildParityFrame(bits);
+                const ones = bits.reduce(function(s, b) { return s + b; }, 0);
+                const result = verifyParityFrame(frame);
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = '<td>' + char + '</td>' +
+                    '<td>' + char.charCodeAt(0) + '</td>' +
+                    '<td class="bit-display">' + formatBits(bits) + '</td>' +
+                    '<td>' + ones + ' (' + (ones % 2 === 0 ? 'par' : 'impar') + ')</td>' +
+                    '<td><span class="bit-1">' + frame[8] + '</span></td>' +
+                    '<td class="bit-display">' + formatBits(frame) + '</td>' +
+                    '<td><span class="status-badge status-success">✓ SUCESSO</span></td>';
+                tbody.appendChild(tr);
+            }
+        } catch (e) {
+            console.error('demoParity error:', e);
+            alert('Erro na demo: ' + e.message);
+        }
+    };
+
+    window.demoParityCorrupt = function() {
+        try {
+            const input = document.getElementById('parity-input').value.trim();
+            if (!input) { alert('Digite algo no campo de texto!'); return; }
+            window.demoParity();
+
+            document.getElementById('parity-corrupt-card').style.display = 'block';
+            const tbody = document.querySelector('#parity-table-corrupt tbody');
+            tbody.innerHTML = '';
+
+            for (let ci = 0; ci < input.length; ci++) {
+                var char = input[ci];
+                var bits = charToBits(char);
+                var frame = buildParityFrame(bits);
+                var corruptPos = Math.floor(Math.random() * 8);
+                var corrupted = frame.slice();
+                corrupted[corruptPos] = 1 - corrupted[corruptPos];
+                var result = verifyParityFrame(corrupted);
+
+                var origHtml = '';
+                for (var j = 0; j < 8; j++) {
+                    origHtml += '<span class="' + (frame[j] ? 'bit-1' : 'bit-0') + '">' + frame[j] + '</span>';
+                }
+                var corrHtml = '';
+                for (var j = 0; j < 8; j++) {
+                    if (j === corruptPos) {
+                        corrHtml += '<span class="bit-corrupted">' + corrupted[j] + '</span>';
+                    } else {
+                        corrHtml += '<span class="' + (corrupted[j] ? 'bit-1' : 'bit-0') + '">' + corrupted[j] + '</span>';
+                    }
+                }
+
+                var tr = document.createElement('tr');
+                tr.innerHTML = '<td>' + char + '</td>' +
+                    '<td class="bit-display">' + origHtml + ' <span class="bit-1">' + frame[8] + '</span></td>' +
+                    '<td class="bit-display">' + corrHtml + ' <span class="bit-1">' + corrupted[8] + '</span></td>' +
+                    '<td>Bit ' + corruptPos + '</td>' +
+                    '<td><span class="status-badge status-error">✗ FALHA DE TRANSMISSÃO</span></td>';
+                tbody.appendChild(tr);
+            }
+        } catch (e) {
+            console.error('demoParityCorrupt error:', e);
+            alert('Erro na demo: ' + e.message);
+        }
+    };
+
+    // ================================================================
+    // DEMO CRC-8
+    // ================================================================
+    window.demoCRC = function() {
+        try {
+            const input = document.getElementById('crc-input').value.trim();
+            if (!input) { alert('Digite algo no campo de texto!'); return; }
+            const messages = input.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+
+            const tbody = document.querySelector('#crc-table-ok tbody');
+            tbody.innerHTML = '';
+
+            for (var mi = 0; mi < messages.length; mi++) {
+                var msg = messages[mi];
+                var bytes = strToBytes(msg);
+                var crc = calculateCRC8(bytes);
+                var hex = bytes.map(function(b) { return b.toString(16).toUpperCase().padStart(2, '0'); }).join(' ');
+
+                var tr = document.createElement('tr');
+                tr.innerHTML = '<td>"' + msg + '"</td>' +
+                    '<td>' + hex + '</td>' +
+                    '<td>0x' + crc.toString(16).toUpperCase().padStart(2,'0') + '</td>' +
+                    '<td class="bit-display">' + formatBits(byteToBits(crc)) + '</td>' +
+                    '<td><span class="status-badge status-success">✓ SUCESSO</span></td>';
+                tbody.appendChild(tr);
+            }
+        } catch (e) {
+            console.error('demoCRC error:', e);
+            alert('Erro na demo: ' + e.message);
+        }
+    };
+
+    window.demoCRCCorrupt = function() {
+        try {
+            const input = document.getElementById('crc-input').value.trim();
+            if (!input) { alert('Digite algo no campo de texto!'); return; }
+            const messages = input.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
+            window.demoCRC();
+
+            document.getElementById('crc-corrupt-card').style.display = 'block';
+            const tbody = document.querySelector('#crc-table-corrupt tbody');
+            tbody.innerHTML = '';
+
+            for (var mi = 0; mi < messages.length; mi++) {
+                var msg = messages[mi];
+                var bytes = strToBytes(msg);
+                var origCRC = calculateCRC8(bytes);
+                var origHex = bytes.map(function(b) { return b.toString(16).toUpperCase().padStart(2,'0'); }).join(' ');
+
+                var corrupted = bytes.slice();
+                var pos = Math.floor(Math.random() * corrupted.length);
+                corrupted[pos] ^= (Math.floor(Math.random() * 255) + 1);
+                var corrHex = '';
+                for (var bi = 0; bi < corrupted.length; bi++) {
+                    var hexVal = corrupted[bi].toString(16).toUpperCase().padStart(2,'0');
+                    if (bi === pos) {
+                        corrHex += '<span class="bit-corrupted">' + hexVal + '</span>';
+                    } else {
+                        corrHex += hexVal;
+                    }
+                    if (bi < corrupted.length - 1) corrHex += ' ';
+                }
+
+                var recalcCRC = calculateCRC8(corrupted);
+
+                var tr = document.createElement('tr');
+                tr.innerHTML = '<td>"' + msg + '"</td>' +
+                    '<td>' + origHex + '</td>' +
+                    '<td>' + corrHex + '</td>' +
+                    '<td>0x' + origCRC.toString(16).toUpperCase().padStart(2,'0') + '</td>' +
+                    '<td><span style="color:var(--accent-red)">0x' + recalcCRC.toString(16).toUpperCase().padStart(2,'0') + '</span></td>' +
+                    '<td><span class="status-badge status-error">✗ FALHA — CRC NAO CONFERE</span></td>';
+                tbody.appendChild(tr);
+            }
+        } catch (e) {
+            console.error('demoCRCCorrupt error:', e);
+            alert('Erro na demo: ' + e.message);
+        }
+    };
+
+    // Auto-run demos on page load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', function() {
+            window.demoParity();
+            window.demoCRC();
+        });
+    } else {
+        // DOM already loaded
+        window.demoParity();
+        window.demoCRC();
+    }
+    </script>
+</body>
+</html>
