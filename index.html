@@ -735,7 +735,7 @@
             <div class="page" id="page-tx2">
                 <div class="page-header">
                     <h2>〰️ Transmitir — Método 2 (FSK)</h2>
-                    <p>Frequency-Shift Keying. Bit 0 = 1200 Hz, Bit 1 = 2400 Hz. Verificação por CRC-8. Taxa de ~20 bps.</p>
+                    <p>Frequency-Shift Keying. Bit 0 = 1200 Hz, Bit 1 = 2400 Hz. Verificação por CRC-8. Taxa de ~10 bps.</p>
                 </div>
 
                 <div class="card">
@@ -762,7 +762,7 @@
                         <div class="stat-label">CRC-8</div>
                     </div>
                     <div class="stat-card">
-                        <div class="stat-value">20</div>
+                        <div class="stat-value">10</div>
                         <div class="stat-label">bps bruto</div>
                     </div>
                     <div class="stat-card">
@@ -1030,8 +1030,8 @@
                         <div class="info-row"><span class="info-label">Tipo</span><span class="info-value">Frequency-Shift Keying</span></div>
                         <div class="info-row"><span class="info-label">Bit 0</span><span class="info-value">1200 Hz</span></div>
                         <div class="info-row"><span class="info-label">Bit 1</span><span class="info-value">2400 Hz</span></div>
-                        <div class="info-row"><span class="info-label">Duração/bit</span><span class="info-value">50 ms</span></div>
-                        <div class="info-row"><span class="info-label">Taxa bruta</span><span class="info-value">20 bps</span></div>
+                        <div class="info-row"><span class="info-label">Duração/bit</span><span class="info-value">100 ms</span></div>
+                        <div class="info-row"><span class="info-label">Taxa bruta</span><span class="info-value">10 bps</span></div>
                         <div class="info-row"><span class="info-label">Preâmbulo</span><span class="info-value">1800 Hz</span></div>
                         <div class="info-row"><span class="info-label">Fim</span><span class="info-value">3000 Hz</span></div>
                         <div class="info-row"><span class="info-label">Erro</span><span class="info-value">CRC-8 (0x07)</span></div>
@@ -1082,12 +1082,12 @@
         BEAT_MIN_SILENCE_MS: 80,
         FSK_FREQ_0: 1200,
         FSK_FREQ_1: 2400,
-        FSK_BIT_DURATION: 0.05,
+        FSK_BIT_DURATION: 0.1,
         FSK_AMPLITUDE: 0.8,
         FSK_PREAMBLE_FREQ: 1800,
-        FSK_PREAMBLE_DURATION: 0.3,
+        FSK_PREAMBLE_DURATION: 0.5,
         FSK_END_FREQ: 3000,
-        FSK_END_DURATION: 0.2,
+        FSK_END_DURATION: 0.3,
         CRC8_POLYNOMIAL: 0x07,
     };
 
@@ -1361,7 +1361,7 @@
         // 1. Preâmbulo
         log(consoleId, `▶ Preâmbulo (${CONFIG.FSK_PREAMBLE_FREQ} Hz, ${CONFIG.FSK_PREAMBLE_DURATION}s)...`, 'log-warn');
         playTone(CONFIG.FSK_PREAMBLE_FREQ, t, CONFIG.FSK_PREAMBLE_DURATION);
-        t += CONFIG.FSK_PREAMBLE_DURATION + 0.05;
+        t += CONFIG.FSK_PREAMBLE_DURATION + 0.15;
 
         // 2. Dados
         for (let i = 0; i < dataBytes.length; i++) {
@@ -1384,7 +1384,7 @@
         }
 
         // 4. Fim
-        t += 0.05;
+        t += 0.15;
         playTone(CONFIG.FSK_END_FREQ, t, CONFIG.FSK_END_DURATION);
         t += CONFIG.FSK_END_DURATION;
 
@@ -1655,42 +1655,38 @@
     };
 
     // ================================================================
-    // RECEIVER METHOD 2 (FSK) — REESCRITO
+    // RECEIVER METHOD 2 (FSK) — v3
     //
-    // Problema original: requestAnimationFrame roda a ~60fps (16ms),
-    // mas cada bit FSK dura 50ms. O analyser com fftSize=4096 (~93ms)
-    // mistura frequências de bits adjacentes. Sem sincronização de
-    // clock de bit, cada bit gera 2-4 amostras redundantes.
+    // Abordagem: acumula TODO o áudio após o preâmbulo em um buffer
+    // contínuo (Float32Array). Quando o sinal de fim é detectado ou
+    // ocorre silêncio prolongado, processa o buffer inteiro de uma vez
+    // com janelas de Goertzel alinhadas e centradas.
     //
-    // Solução: ScriptProcessorNode processa o áudio em chunks exatos
-    // correspondentes à duração de um bit (FSK_BIT_DURATION * sampleRate).
-    // Goertzel é aplicado em cada janela de bit individualmente, com
-    // sincronização a partir da borda do preâmbulo.
+    // Isso elimina problemas de sincronização em tempo real, já que o
+    // processamento é feito offline sobre os dados completos.
     // ================================================================
     let rx2Active = false;
     let rx2Stream = null;
     let rx2AnimFrame = null;
     let rx2Processor = null;
 
-    // Goertzel otimizado para array de samples
-    function goertzelMag(samples, targetFreq, sampleRate) {
-        const n = samples.length;
-        if (n === 0) return 0;
-        const k = Math.round(n * targetFreq / sampleRate);
-        const omega = (2 * Math.PI * k) / n;
+    // Goertzel: retorna magnitude para uma frequência alvo
+    function goertzelMag(samples, startIdx, length, targetFreq, sampleRate) {
+        const k = Math.round(length * targetFreq / sampleRate);
+        const omega = (2 * Math.PI * k) / length;
         const coeff = 2 * Math.cos(omega);
         let s1 = 0, s2 = 0;
-        for (let i = 0; i < n; i++) {
-            const s0 = samples[i] + coeff * s1 - s2;
+        for (let i = 0; i < length; i++) {
+            const s0 = samples[startIdx + i] + coeff * s1 - s2;
             s2 = s1;
             s1 = s0;
         }
-        return Math.sqrt(s1 * s1 + s2 * s2 - coeff * s1 * s2) / n;
+        return Math.sqrt(s1 * s1 + s2 * s2 - coeff * s1 * s2) / length;
     }
 
-    // Also keep the old goertzel for the visualizer analyser
+    // Goertzel simples (array inteiro) para visualização
     function goertzel(samples, targetFreq, sampleRate) {
-        return goertzelMag(samples, targetFreq, sampleRate);
+        return goertzelMag(samples, 0, samples.length, targetFreq, sampleRate);
     }
 
     window.startReceiveMethod2 = async function() {
@@ -1722,46 +1718,47 @@
         canvas.width = canvas.clientWidth * 2;
         canvas.height = 200;
 
-        // ScriptProcessorNode for precise sample-level processing
-        // Buffer size = 256 (~5.8ms) for fine-grained analysis
-        const PROC_BUFFER = 256;
+        // ScriptProcessorNode — coleta amostras em tempo real
+        const PROC_BUFFER = 2048;
         rx2Processor = ctx.createScriptProcessor(PROC_BUFFER, 1, 1);
         source.connect(rx2Processor);
         rx2Processor.connect(ctx.destination);
 
-        // Número exato de amostras por bit
         const SAMPLES_PER_BIT = Math.round(CONFIG.FSK_BIT_DURATION * actualSR);
-        // Buffer circular para acumular amostras de um bit
-        let bitBuffer = new Float32Array(SAMPLES_PER_BIT);
-        let bitBufferPos = 0;
 
-        // Estado
+        // ---- Estados ----
         const STATE_WAIT_PREAMBLE = 0;
-        const STATE_WAIT_DATA_START = 1;
-        const STATE_RECEIVING = 2;
-        const STATE_DONE = 3;
+        const STATE_COLLECTING = 1;  // coletando tudo após preâmbulo
+        const STATE_DONE = 2;
 
         let state = STATE_WAIT_PREAMBLE;
-        let preambleConfidence = 0;          // consecutive preamble detections
-        let silenceAfterPreamble = 0;        // silence samples after preamble
-        let allBits = [];
-        let endDetections = 0;               // consecutive end-freq detections
-        let silenceSamples = 0;              // silence samples for timeout
-        let totalSamplesProcessed = 0;
-        // Larger analysis window for preamble detection (more stable)
-        const PREAMBLE_WINDOW_SIZE = Math.round(0.04 * actualSR); // 40ms
-        let preambleBuffer = new Float32Array(PREAMBLE_WINDOW_SIZE);
-        let preambleBufferPos = 0;
-        // Noise threshold
-        const ENERGY_THRESHOLD = 0.003;
-        // After preamble, wait for silence gap before data starts
-        let dataStarted = false;
+        let preambleConfidence = 0;
+
+        // Buffer dinâmico para coletar todo o áudio de dados
+        // Pré-aloca para ~30s de áudio (expandirá se necessário)
+        let audioBuffer = new Float32Array(actualSR * 30);
+        let audioLen = 0;
+
+        // Janela de análise para preamble (~50ms)
+        const PRE_WIN = Math.round(0.05 * actualSR);
+        let preBuffer = new Float32Array(PRE_WIN);
+        let preBufPos = 0;
+
+        // Detecção de silêncio após dados
+        let silenceChunks = 0;
+        const SILENCE_THRESH = 0.003;
+        // Quantos chunks silenciosos para considerar fim (~500ms)
+        const SILENCE_CHUNKS_END = Math.ceil((0.5 * actualSR) / PROC_BUFFER);
+
+        // Flag: preâmbulo terminou e dados podem estar chegando
+        let preambleEnded = false;
+        let silenceAfterPre = 0;
 
         const consoleId = 'rx2-log';
 
         clearConsole(consoleId);
         log(consoleId, '═══ RECEPÇÃO — MÉTODO 2 (FSK) ═══', 'log-info log-bold');
-        log(consoleId, `Sample rate: ${actualSR} Hz | Amostras/bit: ${SAMPLES_PER_BIT}`, 'log-info');
+        log(consoleId, `Sample rate: ${actualSR} Hz | Amostras/bit: ${SAMPLES_PER_BIT} | Duração/bit: ${CONFIG.FSK_BIT_DURATION * 1000}ms`, 'log-info');
         log(consoleId, `Aguardando preâmbulo (${CONFIG.FSK_PREAMBLE_FREQ} Hz)...`, 'log-warn');
 
         rx2Processor.onaudioprocess = function(e) {
@@ -1770,131 +1767,95 @@
             const input = e.inputBuffer.getChannelData(0);
             const len = input.length;
 
-            // RMS for energy detection
+            // RMS
             let sum = 0;
             for (let i = 0; i < len; i++) sum += input[i] * input[i];
             const rms = Math.sqrt(sum / len);
 
             if (state === STATE_WAIT_PREAMBLE) {
-                // Fill preamble analysis buffer
+                // Acumula no buffer de preâmbulo e analisa a cada janela
                 for (let i = 0; i < len; i++) {
-                    preambleBuffer[preambleBufferPos] = input[i];
-                    preambleBufferPos++;
-                    if (preambleBufferPos >= PREAMBLE_WINDOW_SIZE) {
-                        preambleBufferPos = 0;
+                    preBuffer[preBufPos++] = input[i];
+                    if (preBufPos >= PRE_WIN) {
+                        preBufPos = 0;
+                        const magPre = goertzelMag(preBuffer, 0, PRE_WIN, CONFIG.FSK_PREAMBLE_FREQ, actualSR);
+                        const mag0 = goertzelMag(preBuffer, 0, PRE_WIN, CONFIG.FSK_FREQ_0, actualSR);
+                        const mag1 = goertzelMag(preBuffer, 0, PRE_WIN, CONFIG.FSK_FREQ_1, actualSR);
 
-                        // Analyze for preamble frequency
-                        const magPre = goertzelMag(preambleBuffer, CONFIG.FSK_PREAMBLE_FREQ, actualSR);
-                        const mag0 = goertzelMag(preambleBuffer, CONFIG.FSK_FREQ_0, actualSR);
-                        const mag1 = goertzelMag(preambleBuffer, CONFIG.FSK_FREQ_1, actualSR);
-
-                        if (magPre > mag0 && magPre > mag1 && magPre > ENERGY_THRESHOLD) {
+                        if (magPre > mag0 && magPre > mag1 && magPre > SILENCE_THRESH) {
                             preambleConfidence++;
-                            if (preambleConfidence >= 3) {
-                                state = STATE_WAIT_DATA_START;
-                                silenceAfterPreamble = 0;
-                                dataStarted = false;
-                                log(consoleId, '✓ Preâmbulo detectado! Aguardando início dos dados...', 'log-success log-bold');
+                            if (preambleConfidence >= 5) {
+                                state = STATE_COLLECTING;
+                                audioLen = 0;
+                                preambleEnded = false;
+                                silenceAfterPre = 0;
+                                silenceChunks = 0;
+                                log(consoleId, '✓ Preâmbulo detectado! Coletando dados...', 'log-success log-bold');
                             }
                         } else {
                             preambleConfidence = Math.max(0, preambleConfidence - 1);
                         }
                     }
                 }
-            } else if (state === STATE_WAIT_DATA_START) {
-                // Wait for preamble to end (silence gap) then start collecting bits
-                // The TX has a 50ms gap between preamble and first data bit
-                if (rms < ENERGY_THRESHOLD) {
-                    silenceAfterPreamble += len;
-                    if (silenceAfterPreamble > actualSR * 0.02) { // 20ms of silence
-                        state = STATE_RECEIVING;
-                        bitBufferPos = 0;
-                        allBits = [];
-                        silenceSamples = 0;
-                        endDetections = 0;
-                        log(consoleId, 'Recebendo dados FSK...', 'log-info');
+            } else if (state === STATE_COLLECTING) {
+                // Fase 1: esperar o preâmbulo terminar (silêncio do gap)
+                if (!preambleEnded) {
+                    if (rms < SILENCE_THRESH) {
+                        silenceAfterPre += len;
+                        // Gap de 150ms no TX — detectar pelo menos 30ms de silêncio
+                        if (silenceAfterPre > actualSR * 0.03) {
+                            preambleEnded = true;
+                            log(consoleId, 'Gap detectado. Gravando dados...', 'log-info');
+                        }
+                    } else {
+                        silenceAfterPre = 0;
+                    }
+                    return;
+                }
+
+                // Fase 2: coletar todo o áudio dos dados
+                // Expandir buffer se necessário
+                if (audioLen + len > audioBuffer.length) {
+                    const newBuf = new Float32Array(audioBuffer.length * 2);
+                    newBuf.set(audioBuffer);
+                    audioBuffer = newBuf;
+                }
+                audioBuffer.set(input, audioLen);
+                audioLen += len;
+
+                // Detectar silêncio prolongado (fim da transmissão)
+                if (rms < SILENCE_THRESH) {
+                    silenceChunks++;
+                    if (silenceChunks >= SILENCE_CHUNKS_END && audioLen > SAMPLES_PER_BIT * 8) {
+                        // Fim por silêncio
+                        state = STATE_DONE;
+                        log(consoleId, `Silêncio detectado. Total de amostras coletadas: ${audioLen}`, 'log-info');
+                        processCollectedAudio(audioBuffer, audioLen, actualSR, SAMPLES_PER_BIT, consoleId);
+                        stopReceive2();
+                        return;
                     }
                 } else {
-                    silenceAfterPreamble = 0;
-                    // Check if we're already hearing data (no gap detected yet)
-                    // Detect first data bit frequencies
-                    const magPre = goertzelMag(input, CONFIG.FSK_PREAMBLE_FREQ, actualSR);
-                    const mag0 = goertzelMag(input, CONFIG.FSK_FREQ_0, actualSR);
-                    const mag1 = goertzelMag(input, CONFIG.FSK_FREQ_1, actualSR);
-                    if ((mag0 > magPre || mag1 > magPre) && (mag0 > ENERGY_THRESHOLD || mag1 > ENERGY_THRESHOLD)) {
-                        // Data already started, transition immediately
-                        state = STATE_RECEIVING;
-                        bitBufferPos = 0;
-                        allBits = [];
-                        silenceSamples = 0;
-                        endDetections = 0;
-                        log(consoleId, 'Recebendo dados FSK...', 'log-info');
-                        // Fall through to process this chunk as data
-                    }
-                }
-                if (state !== STATE_RECEIVING) return;
-            }
+                    // Verificar sinal de fim (3000 Hz)
+                    if (audioLen > SAMPLES_PER_BIT) {
+                        // Analisar os últimos SAMPLES_PER_BIT amostras para sinal de fim
+                        const checkStart = audioLen - SAMPLES_PER_BIT;
+                        const magEnd = goertzelMag(audioBuffer, checkStart, SAMPLES_PER_BIT, CONFIG.FSK_END_FREQ, actualSR);
+                        const mag0 = goertzelMag(audioBuffer, checkStart, SAMPLES_PER_BIT, CONFIG.FSK_FREQ_0, actualSR);
+                        const mag1 = goertzelMag(audioBuffer, checkStart, SAMPLES_PER_BIT, CONFIG.FSK_FREQ_1, actualSR);
 
-            if (state === STATE_RECEIVING) {
-                // Accumulate samples and analyze per-bit windows
-                for (let i = 0; i < len; i++) {
-                    bitBuffer[bitBufferPos] = input[i];
-                    bitBufferPos++;
-
-                    if (bitBufferPos >= SAMPLES_PER_BIT) {
-                        // Full bit window — analyze
-                        const mag0 = goertzelMag(bitBuffer, CONFIG.FSK_FREQ_0, actualSR);
-                        const mag1 = goertzelMag(bitBuffer, CONFIG.FSK_FREQ_1, actualSR);
-                        const magEnd = goertzelMag(bitBuffer, CONFIG.FSK_END_FREQ, actualSR);
-                        const magPre = goertzelMag(bitBuffer, CONFIG.FSK_PREAMBLE_FREQ, actualSR);
-
-                        // Calculate energy in this window
-                        let bitSum = 0;
-                        for (let j = 0; j < SAMPLES_PER_BIT; j++) bitSum += bitBuffer[j] * bitBuffer[j];
-                        const bitRms = Math.sqrt(bitSum / SAMPLES_PER_BIT);
-
-                        if (bitRms < ENERGY_THRESHOLD * 0.5) {
-                            // Silence — might be end of transmission
-                            silenceSamples += SAMPLES_PER_BIT;
-                            if (silenceSamples > actualSR * 0.5 && allBits.length > 0) {
-                                // 500ms of silence after data = end
-                                state = STATE_DONE;
-                                decodeFSKBits(allBits, consoleId);
-                                stopReceive2();
-                                return;
-                            }
-                        } else {
-                            silenceSamples = 0;
-
-                            // Check for end signal
-                            if (magEnd > mag0 && magEnd > mag1 && magEnd > magPre && magEnd > ENERGY_THRESHOLD) {
-                                endDetections++;
-                                if (endDetections >= 2) {
-                                    state = STATE_DONE;
-                                    decodeFSKBits(allBits, consoleId);
-                                    stopReceive2();
-                                    return;
-                                }
-                            } else {
-                                endDetections = 0;
-                                // Classify as bit 0 or bit 1 (ignore preamble freq if still present)
-                                if (mag0 > ENERGY_THRESHOLD * 0.3 || mag1 > ENERGY_THRESHOLD * 0.3) {
-                                    // Only classify if clearly data frequency
-                                    if (mag0 > magPre || mag1 > magPre) {
-                                        const bit = mag1 > mag0 ? 1 : 0;
-                                        allBits.push(bit);
-                                    }
-                                }
-                            }
+                        if (magEnd > mag0 * 1.5 && magEnd > mag1 * 1.5 && magEnd > SILENCE_THRESH) {
+                            state = STATE_DONE;
+                            // Remove o sinal de fim do buffer
+                            audioLen = Math.max(0, audioLen - SAMPLES_PER_BIT * 2);
+                            log(consoleId, `Sinal de fim detectado. Total de amostras coletadas: ${audioLen}`, 'log-info');
+                            processCollectedAudio(audioBuffer, audioLen, actualSR, SAMPLES_PER_BIT, consoleId);
+                            stopReceive2();
+                            return;
                         }
-
-                        // Reset for next bit
-                        bitBufferPos = 0;
                     }
+                    silenceChunks = 0;
                 }
             }
-
-            totalSamplesProcessed += len;
         };
 
         // Visualization
@@ -1907,14 +1868,7 @@
             canvasCtx.fillStyle = '#0d1225';
             canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Highlight target frequency bins
             const binWidth = actualSR / analyser.fftSize;
-            const highlightBins = [
-                { freq: CONFIG.FSK_FREQ_0, color: '#06b6d480', label: 'F0' },
-                { freq: CONFIG.FSK_FREQ_1, color: '#f59e0b80', label: 'F1' },
-                { freq: CONFIG.FSK_PREAMBLE_FREQ, color: '#8b5cf680', label: 'PRE' },
-                { freq: CONFIG.FSK_END_FREQ, color: '#ef444480', label: 'END' },
-            ];
 
             canvasCtx.fillStyle = '#3b82f630';
             const barW = canvas.width / (freqData.length * 0.15);
@@ -1923,8 +1877,14 @@
                 canvasCtx.fillRect(i * barW, canvas.height - barH, barW - 1, barH);
             }
 
-            // Draw frequency labels
-            for (const h of highlightBins) {
+            // Highlight frequency bins
+            const highlights = [
+                { freq: CONFIG.FSK_FREQ_0, color: '#06b6d480' },
+                { freq: CONFIG.FSK_FREQ_1, color: '#f59e0b80' },
+                { freq: CONFIG.FSK_PREAMBLE_FREQ, color: '#8b5cf680' },
+                { freq: CONFIG.FSK_END_FREQ, color: '#ef444480' },
+            ];
+            for (const h of highlights) {
                 const binIdx = Math.round(h.freq / binWidth);
                 const xPos = binIdx * barW;
                 canvasCtx.fillStyle = h.color;
@@ -1932,7 +1892,7 @@
                 canvasCtx.fillRect(xPos - 2, canvas.height - barH, barW + 4, barH);
             }
 
-            // Show detected freq
+            // Detected frequency display
             const visData = new Float32Array(analyser.fftSize);
             analyser.getFloatTimeDomainData(visData);
             const m0 = goertzel(visData, CONFIG.FSK_FREQ_0, actualSR);
@@ -1950,6 +1910,130 @@
             document.getElementById('rx2-freq').textContent = detFreq;
         }
         drawSpectrum();
+    }
+
+    // ================================================================
+    // PROCESSAMENTO OFFLINE DO ÁUDIO FSK COLETADO
+    //
+    // Em vez de decodificar bit a bit em tempo real (sujeito a jitter),
+    // analisamos o buffer inteiro de uma vez. Isso permite:
+    // 1. Encontrar o melhor alinhamento de bit por correlação
+    // 2. Usar janelas centradas para evitar artefatos de borda
+    // ================================================================
+    function processCollectedAudio(buffer, length, sampleRate, samplesPerBit, consoleId) {
+        if (length < samplesPerBit * 2) {
+            log(consoleId, '✗ Dados insuficientes para decodificar', 'log-error');
+            return;
+        }
+
+        log(consoleId, '');
+        log(consoleId, `Processando ${length} amostras (${(length / sampleRate * 1000).toFixed(0)} ms)...`, 'log-info');
+
+        // ---- Passo 1: Encontrar o início real dos dados ----
+        // Procura a primeira janela com energia significativa de dados (f0 ou f1)
+        const STEP = Math.round(samplesPerBit * 0.1); // passo de 10% de um bit
+        let bestStart = 0;
+        let bestEnergy = 0;
+
+        // Varrer os primeiros 2 bits para encontrar onde os dados começam
+        const searchEnd = Math.min(samplesPerBit * 2, length - samplesPerBit);
+        for (let offset = 0; offset < searchEnd; offset += STEP) {
+            const m0 = goertzelMag(buffer, offset, samplesPerBit, CONFIG.FSK_FREQ_0, sampleRate);
+            const m1 = goertzelMag(buffer, offset, samplesPerBit, CONFIG.FSK_FREQ_1, sampleRate);
+            const energy = Math.max(m0, m1);
+            if (energy > bestEnergy) {
+                bestEnergy = energy;
+                bestStart = offset;
+            }
+        }
+
+        log(consoleId, `Início dos dados encontrado na amostra ${bestStart} (${(bestStart / sampleRate * 1000).toFixed(1)} ms)`, 'log-info');
+
+        // ---- Passo 2: Testar múltiplos alinhamentos e escolher o melhor ----
+        // Testa vários offsets próximos do bestStart para encontrar
+        // o alinhamento que maximiza a "confiança" dos bits (razão max/min entre f0 e f1)
+        const FINE_SEARCH_RANGE = Math.round(samplesPerBit * 0.5);
+        const FINE_STEP = Math.round(samplesPerBit * 0.05); // 5% de um bit
+        let bestOffset = bestStart;
+        let bestConfidence = 0;
+
+        for (let offset = Math.max(0, bestStart - FINE_SEARCH_RANGE);
+             offset < Math.min(bestStart + FINE_SEARCH_RANGE, length - samplesPerBit);
+             offset += FINE_STEP) {
+
+            let totalConf = 0;
+            let numBits = 0;
+            let pos = offset;
+
+            // Usar janela central (60% do meio)
+            const margin = Math.round(samplesPerBit * 0.2);
+            const winLen = samplesPerBit - 2 * margin;
+
+            while (pos + samplesPerBit <= length && numBits < 48) { // testa até 48 bits
+                const m0 = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_FREQ_0, sampleRate);
+                const m1 = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_FREQ_1, sampleRate);
+                const magEnd = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_END_FREQ, sampleRate);
+
+                // Se encontrou sinal de fim, parar
+                if (magEnd > m0 * 1.5 && magEnd > m1 * 1.5 && magEnd > 0.003) break;
+
+                const maxM = Math.max(m0, m1);
+                const minM = Math.min(m0, m1);
+                if (maxM > 0.001) {
+                    // Confiança = razão entre frequência dominante e a outra
+                    totalConf += (maxM - minM) / maxM;
+                    numBits++;
+                }
+                pos += samplesPerBit;
+            }
+
+            if (numBits > 0) {
+                const avgConf = totalConf / numBits;
+                if (avgConf > bestConfidence) {
+                    bestConfidence = avgConf;
+                    bestOffset = offset;
+                }
+            }
+        }
+
+        log(consoleId, `Melhor alinhamento: amostra ${bestOffset} (confiança: ${(bestConfidence * 100).toFixed(1)}%)`, 'log-info');
+
+        // ---- Passo 3: Decodificar bits com o melhor alinhamento ----
+        const allBits = [];
+        let pos = bestOffset;
+        const margin = Math.round(samplesPerBit * 0.2);
+        const winLen = samplesPerBit - 2 * margin;
+
+        while (pos + samplesPerBit <= length) {
+            const m0 = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_FREQ_0, sampleRate);
+            const m1 = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_FREQ_1, sampleRate);
+            const magEnd = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_END_FREQ, sampleRate);
+            const magPre = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_PREAMBLE_FREQ, sampleRate);
+
+            // Calcular RMS da janela
+            let rmsSum = 0;
+            for (let j = pos; j < pos + samplesPerBit && j < length; j++) {
+                rmsSum += buffer[j] * buffer[j];
+            }
+            const winRms = Math.sqrt(rmsSum / samplesPerBit);
+
+            // Parar se silêncio ou sinal de fim
+            if (winRms < 0.001) break;
+            if (magEnd > m0 * 1.3 && magEnd > m1 * 1.3 && magEnd > 0.002) break;
+
+            // Classificar bit (ignorar se energia de preâmbulo domina)
+            const dataMax = Math.max(m0, m1);
+            if (dataMax > 0.001 && dataMax > magPre * 0.5) {
+                allBits.push(m1 > m0 ? 1 : 0);
+            }
+
+            pos += samplesPerBit;
+        }
+
+        log(consoleId, `Bits decodificados: ${allBits.length}`, 'log-info');
+
+        // ---- Passo 4: Decodificar bytes e verificar CRC ----
+        decodeFSKBits(allBits, consoleId);
     }
 
     function decodeFSKBits(allBits, consoleId) {
