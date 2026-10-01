@@ -1361,7 +1361,7 @@
         // 1. Preâmbulo
         log(consoleId, `▶ Preâmbulo (${CONFIG.FSK_PREAMBLE_FREQ} Hz, ${CONFIG.FSK_PREAMBLE_DURATION}s)...`, 'log-warn');
         playTone(CONFIG.FSK_PREAMBLE_FREQ, t, CONFIG.FSK_PREAMBLE_DURATION);
-        t += CONFIG.FSK_PREAMBLE_DURATION + 0.15;
+        t += CONFIG.FSK_PREAMBLE_DURATION;
 
         // 2. Dados
         for (let i = 0; i < dataBytes.length; i++) {
@@ -1384,7 +1384,6 @@
         }
 
         // 4. Fim
-        t += 0.15;
         playTone(CONFIG.FSK_END_FREQ, t, CONFIG.FSK_END_DURATION);
         t += CONFIG.FSK_END_DURATION;
 
@@ -1750,10 +1749,6 @@
         // Quantos chunks silenciosos para considerar fim (~500ms)
         const SILENCE_CHUNKS_END = Math.ceil((0.5 * actualSR) / PROC_BUFFER);
 
-        // Flag: preâmbulo terminou e dados podem estar chegando
-        let preambleEnded = false;
-        let silenceAfterPre = 0;
-
         const consoleId = 'rx2-log';
 
         clearConsole(consoleId);
@@ -1784,13 +1779,11 @@
 
                         if (magPre > mag0 && magPre > mag1 && magPre > SILENCE_THRESH) {
                             preambleConfidence++;
-                            if (preambleConfidence >= 5) {
+                            if (preambleConfidence >= 3) {
                                 state = STATE_COLLECTING;
                                 audioLen = 0;
-                                preambleEnded = false;
-                                silenceAfterPre = 0;
                                 silenceChunks = 0;
-                                log(consoleId, '✓ Preâmbulo detectado! Coletando dados...', 'log-success log-bold');
+                                log(consoleId, '✓ Preâmbulo detectado! Gravando stream contínuo...', 'log-success log-bold');
                             }
                         } else {
                             preambleConfidence = Math.max(0, preambleConfidence - 1);
@@ -1798,22 +1791,6 @@
                     }
                 }
             } else if (state === STATE_COLLECTING) {
-                // Fase 1: esperar o preâmbulo terminar (silêncio do gap)
-                if (!preambleEnded) {
-                    if (rms < SILENCE_THRESH) {
-                        silenceAfterPre += len;
-                        // Gap de 150ms no TX — detectar pelo menos 30ms de silêncio
-                        if (silenceAfterPre > actualSR * 0.03) {
-                            preambleEnded = true;
-                            log(consoleId, 'Gap detectado. Gravando dados...', 'log-info');
-                        }
-                    } else {
-                        silenceAfterPre = 0;
-                    }
-                    return;
-                }
-
-                // Fase 2: coletar todo o áudio dos dados
                 // Expandir buffer se necessário
                 if (audioLen + len > audioBuffer.length) {
                     const newBuf = new Float32Array(audioBuffer.length * 2);
@@ -1826,7 +1803,7 @@
                 // Detectar silêncio prolongado (fim da transmissão)
                 if (rms < SILENCE_THRESH) {
                     silenceChunks++;
-                    if (silenceChunks >= SILENCE_CHUNKS_END && audioLen > SAMPLES_PER_BIT * 8) {
+                    if (silenceChunks >= SILENCE_CHUNKS_END && audioLen > SAMPLES_PER_BIT * 4) {
                         // Fim por silêncio
                         state = STATE_DONE;
                         log(consoleId, `Silêncio detectado. Total de amostras coletadas: ${audioLen}`, 'log-info');
@@ -1842,11 +1819,10 @@
                         const magEnd = goertzelMag(audioBuffer, checkStart, SAMPLES_PER_BIT, CONFIG.FSK_END_FREQ, actualSR);
                         const mag0 = goertzelMag(audioBuffer, checkStart, SAMPLES_PER_BIT, CONFIG.FSK_FREQ_0, actualSR);
                         const mag1 = goertzelMag(audioBuffer, checkStart, SAMPLES_PER_BIT, CONFIG.FSK_FREQ_1, actualSR);
+                        const magPre = goertzelMag(audioBuffer, checkStart, SAMPLES_PER_BIT, CONFIG.FSK_PREAMBLE_FREQ, actualSR);
 
-                        if (magEnd > mag0 * 1.5 && magEnd > mag1 * 1.5 && magEnd > SILENCE_THRESH) {
+                        if (magEnd > mag0 && magEnd > mag1 && magEnd > magPre && magEnd > SILENCE_THRESH) {
                             state = STATE_DONE;
-                            // Remove o sinal de fim do buffer
-                            audioLen = Math.max(0, audioLen - SAMPLES_PER_BIT * 2);
                             log(consoleId, `Sinal de fim detectado. Total de amostras coletadas: ${audioLen}`, 'log-info');
                             processCollectedAudio(audioBuffer, audioLen, actualSR, SAMPLES_PER_BIT, consoleId);
                             stopReceive2();
@@ -1949,84 +1925,59 @@
 
         log(consoleId, `Início dos dados encontrado na amostra ${bestStart} (${(bestStart / sampleRate * 1000).toFixed(1)} ms)`, 'log-info');
 
-        // ---- Passo 2: Testar múltiplos alinhamentos e escolher o melhor ----
-        // Testa vários offsets próximos do bestStart para encontrar
-        // o alinhamento que maximiza a "confiança" dos bits (razão max/min entre f0 e f1)
-        const FINE_SEARCH_RANGE = Math.round(samplesPerBit * 0.5);
-        const FINE_STEP = Math.round(samplesPerBit * 0.05); // 5% de um bit
-        let bestOffset = bestStart;
-        let bestConfidence = 0;
+        // ---- Passo 1: Encontrar o início exato dos dados ----
+        // Procura a transição onde a energia do preâmbulo cai e a de dados sobe
+        // Como não há mais gap de silêncio, a transição é imediata.
+        const STEP = Math.round(samplesPerBit * 0.1); // passo de 10%
+        let bestStart = -1;
 
-        for (let offset = Math.max(0, bestStart - FINE_SEARCH_RANGE);
-             offset < Math.min(bestStart + FINE_SEARCH_RANGE, length - samplesPerBit);
-             offset += FINE_STEP) {
-
-            let totalConf = 0;
-            let numBits = 0;
-            let pos = offset;
-
-            // Usar janela central (60% do meio)
-            const margin = Math.round(samplesPerBit * 0.2);
-            const winLen = samplesPerBit - 2 * margin;
-
-            while (pos + samplesPerBit <= length && numBits < 48) { // testa até 48 bits
-                const m0 = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_FREQ_0, sampleRate);
-                const m1 = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_FREQ_1, sampleRate);
-                const magEnd = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_END_FREQ, sampleRate);
-
-                // Se encontrou sinal de fim, parar
-                if (magEnd > m0 * 1.5 && magEnd > m1 * 1.5 && magEnd > 0.003) break;
-
-                const maxM = Math.max(m0, m1);
-                const minM = Math.min(m0, m1);
-                if (maxM > 0.001) {
-                    // Confiança = razão entre frequência dominante e a outra
-                    totalConf += (maxM - minM) / maxM;
-                    numBits++;
-                }
-                pos += samplesPerBit;
-            }
-
-            if (numBits > 0) {
-                const avgConf = totalConf / numBits;
-                if (avgConf > bestConfidence) {
-                    bestConfidence = avgConf;
-                    bestOffset = offset;
-                }
+        // Varrer o buffer até o primeiro bit de dados aparecer fortemente
+        for (let offset = 0; offset < length - samplesPerBit; offset += STEP) {
+            const magPre = goertzelMag(buffer, offset, samplesPerBit, CONFIG.FSK_PREAMBLE_FREQ, sampleRate);
+            const m0 = goertzelMag(buffer, offset, samplesPerBit, CONFIG.FSK_FREQ_0, sampleRate);
+            const m1 = goertzelMag(buffer, offset, samplesPerBit, CONFIG.FSK_FREQ_1, sampleRate);
+            
+            // O início dos dados é quando f0 ou f1 superam o preâmbulo
+            if ((m0 > magPre || m1 > magPre) && Math.max(m0, m1) > 0.002) {
+                bestStart = offset;
+                break;
             }
         }
 
-        log(consoleId, `Melhor alinhamento: amostra ${bestOffset} (confiança: ${(bestConfidence * 100).toFixed(1)}%)`, 'log-info');
+        if (bestStart === -1) {
+            log(consoleId, '✗ Não foi possível encontrar o início dos dados após o preâmbulo', 'log-error');
+            return;
+        }
 
-        // ---- Passo 3: Decodificar bits com o melhor alinhamento ----
+        log(consoleId, `Início dos dados encontrado na amostra ${bestStart} (${(bestStart / sampleRate * 1000).toFixed(1)} ms)`, 'log-info');
+
+        // ---- Passo 2: Decodificar bits a partir desse ponto ----
+        // Com o clock ancorado exatamente na transição do preâmbulo, os bits 
+        // fluem continuamente. Lemos o centro de cada janela.
         const allBits = [];
-        let pos = bestOffset;
-        const margin = Math.round(samplesPerBit * 0.2);
-        const winLen = samplesPerBit - 2 * margin;
+        let pos = bestStart;
+        const margin = Math.round(samplesPerBit * 0.2); // Ignora bordas de 20%
+        const winLen = samplesPerBit - 2 * margin; // Analisa os 60% centrais
 
         while (pos + samplesPerBit <= length) {
             const m0 = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_FREQ_0, sampleRate);
             const m1 = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_FREQ_1, sampleRate);
             const magEnd = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_END_FREQ, sampleRate);
-            const magPre = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_PREAMBLE_FREQ, sampleRate);
 
-            // Calcular RMS da janela
-            let rmsSum = 0;
-            for (let j = pos; j < pos + samplesPerBit && j < length; j++) {
-                rmsSum += buffer[j] * buffer[j];
-            }
-            const winRms = Math.sqrt(rmsSum / samplesPerBit);
-
-            // Parar se silêncio ou sinal de fim
-            if (winRms < 0.001) break;
-            if (magEnd > m0 * 1.3 && magEnd > m1 * 1.3 && magEnd > 0.002) break;
-
-            // Classificar bit (ignorar se energia de preâmbulo domina)
-            const dataMax = Math.max(m0, m1);
-            if (dataMax > 0.001 && dataMax > magPre * 0.5) {
-                allBits.push(m1 > m0 ? 1 : 0);
+            // Se o sinal de fim predomina fortemente, terminamos
+            if (magEnd > m0 * 1.5 && magEnd > m1 * 1.5 && magEnd > 0.002) {
+                log(consoleId, 'Sinal de fim encontrado durante a decodificação.', 'log-info');
+                break;
             }
 
+            // Para evitar ler silêncio no fim do buffer, paramos se a energia geral for nula
+            if (Math.max(m0, m1) < 0.0005) {
+                break;
+            }
+
+            // Incondicionalmente empurra 1 bit a cada intervalo
+            allBits.push(m1 > m0 ? 1 : 0);
+            
             pos += samplesPerBit;
         }
 
