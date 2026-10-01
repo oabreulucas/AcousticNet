@@ -1410,11 +1410,14 @@
     }
 
     // ================================================================
-    // RECEIVER METHOD 1 (Batidas)
+    // RECEIVER METHOD 1 (Batidas) — CORRIGIDO
+    // Usa ScriptProcessorNode para detecção precisa de batidas com
+    // timing baseado em amostras em vez de requestAnimationFrame.
     // ================================================================
     let rx1Active = false;
     let rx1Stream = null;
     let rx1AnimFrame = null;
+    let rx1Processor = null;
 
     window.startReceiveMethod1 = async function() {
         if (rx1Active) return;
@@ -1437,53 +1440,190 @@
         analyser.fftSize = 2048;
         source.connect(analyser);
 
-        const bufLen = analyser.fftSize;
-        const dataArray = new Float32Array(bufLen);
+        // ScriptProcessorNode para timing preciso (2048 samples = ~46ms)
+        const PROC_SIZE = 2048;
+        rx1Processor = ctx.createScriptProcessor(PROC_SIZE, 1, 1);
+        source.connect(rx1Processor);
+        rx1Processor.connect(ctx.destination); // necessário para manter ativo
+
         const canvas = document.getElementById('rx1-canvas');
         const canvasCtx = canvas.getContext('2d');
         canvas.width = canvas.clientWidth * 2;
         canvas.height = 200;
 
         let beatCount = 0;
-        let lastBeatTime = 0;
         let inBeat = false;
         let frameBits = [];
         let message = '';
         let charCount = 0;
         let startDetected = false;
-        let startBeatCount = 0;
-        let silentFrames = 0;
-        let bitWindowStart = 0;
-        let bitBeats = 0;
+        let rapidBeatTimes = [];    // timestamps of rapid beats for start detection
+        let silenceSamples = 0;     // how many samples of silence since last beat
+        let bitBeats = 0;           // number of beats in current bit window
+        let bitWindowSamples = 0;   // samples elapsed in current bit window
         let bitWindowActive = false;
+        let endRapidBeats = [];     // detect end signal (4 rapid beats)
+        let samplesSinceLastBeat = 0;
         const consoleId = 'rx1-log';
+
+        const BIT_INTERVAL_SAMPLES = Math.round(CONFIG.BIT_INTERVAL * ctx.sampleRate);
+        const BEAT_MIN_SILENCE_SAMPLES = Math.round((CONFIG.BEAT_MIN_SILENCE_MS / 1000) * ctx.sampleRate);
+        // Time window: beats within 350ms are "rapid"
+        const RAPID_BEAT_WINDOW_SAMPLES = Math.round(0.35 * ctx.sampleRate);
+        // Silence threshold to consider transmission ended (3 seconds)
+        const END_SILENCE_SAMPLES = Math.round(3.0 * ctx.sampleRate);
+        // Threshold for beat end gap detection (~60% of BIT_INTERVAL)
+        const BIT_WINDOW_THRESH_SAMPLES = Math.round(BIT_INTERVAL_SAMPLES * 0.6);
+
+        let totalSamplesProcessed = 0;
+        let lastBeatSample = -999999;
 
         clearConsole(consoleId);
         log(consoleId, '═══ RECEPÇÃO — MÉTODO 1 (BATIDAS) ═══', 'log-info log-bold');
         log(consoleId, 'Aguardando sinal de início (3 batidas rápidas)...', 'log-warn');
 
-        function processFrame() {
+        rx1Processor.onaudioprocess = function(e) {
             if (!rx1Active) return;
-            rx1AnimFrame = requestAnimationFrame(processFrame);
 
-            analyser.getFloatTimeDomainData(dataArray);
+            const input = e.inputBuffer.getChannelData(0);
+            const len = input.length;
 
-            // Calculate RMS
+            // Calculate RMS for this buffer
             let sum = 0;
-            for (let i = 0; i < bufLen; i++) sum += dataArray[i] * dataArray[i];
-            const rms = Math.sqrt(sum / bufLen);
+            for (let i = 0; i < len; i++) sum += input[i] * input[i];
+            const rms = Math.sqrt(sum / len);
             document.getElementById('rx1-rms').textContent = rms.toFixed(4);
 
-            // Draw waveform
+            // Detect beat in this chunk
+            const isBeatChunk = rms > CONFIG.BEAT_ENERGY_THRESHOLD;
+
+            if (isBeatChunk) {
+                if (!inBeat && (totalSamplesProcessed - lastBeatSample) > BEAT_MIN_SILENCE_SAMPLES) {
+                    // New beat detected!
+                    inBeat = true;
+                    beatCount++;
+                    lastBeatSample = totalSamplesProcessed;
+                    samplesSinceLastBeat = 0;
+                    document.getElementById('rx1-beats').textContent = beatCount;
+
+                    if (!startDetected) {
+                        // Track rapid beats for start signal detection
+                        rapidBeatTimes.push(totalSamplesProcessed);
+                        // Remove beats that are too old from the window
+                        while (rapidBeatTimes.length > 0 &&
+                               (totalSamplesProcessed - rapidBeatTimes[0]) > ctx.sampleRate * 1.5) {
+                            rapidBeatTimes.shift();
+                        }
+                        // Check if we have 3 rapid beats within the window
+                        if (rapidBeatTimes.length >= 3) {
+                            const span = rapidBeatTimes[rapidBeatTimes.length - 1] - rapidBeatTimes[rapidBeatTimes.length - 3];
+                            if (span < ctx.sampleRate * 0.8) { // 3 beats within 800ms
+                                startDetected = true;
+                                log(consoleId, '✓ Sinal de início detectado! Recebendo dados...', 'log-success log-bold');
+                                log(consoleId, '');
+                                // Wait a bit before starting bit collection (skip the pause after start signal)
+                                silenceSamples = 0;
+                                bitWindowActive = false;
+                                bitBeats = 0;
+                                bitWindowSamples = 0;
+                            }
+                        }
+                    } else {
+                        // Data reception - count beats per bit window
+                        if (!bitWindowActive) {
+                            bitWindowActive = true;
+                            bitBeats = 1;
+                            bitWindowSamples = 0;
+                        } else {
+                            bitBeats++;
+                        }
+                        // Also track for end signal
+                        endRapidBeats.push(totalSamplesProcessed);
+                        while (endRapidBeats.length > 0 &&
+                               (totalSamplesProcessed - endRapidBeats[0]) > ctx.sampleRate * 1.5) {
+                            endRapidBeats.shift();
+                        }
+                        if (endRapidBeats.length >= 4) {
+                            const span4 = endRapidBeats[endRapidBeats.length - 1] - endRapidBeats[endRapidBeats.length - 4];
+                            if (span4 < ctx.sampleRate * 1.2) { // 4 beats within 1.2s
+                                log(consoleId, '');
+                                log(consoleId, '✓ Sinal de fim detectado!', 'log-warn');
+                                log(consoleId, `═══ RESULTADO: "${message}" (${charCount} chars) ═══`, 'log-info log-bold');
+                                stopReceive1();
+                                return;
+                            }
+                        }
+                    }
+                }
+                silenceSamples = 0;
+            } else {
+                inBeat = false;
+                silenceSamples += len;
+                samplesSinceLastBeat += len;
+
+                if (startDetected && bitWindowActive) {
+                    bitWindowSamples += len;
+
+                    // If enough silence has passed since the bit window started,
+                    // decode the bit based on beat count
+                    if (samplesSinceLastBeat > BIT_WINDOW_THRESH_SAMPLES) {
+                        const bit = bitBeats >= 2 ? 1 : 0;
+                        frameBits.push(bit);
+                        bitWindowActive = false;
+                        bitBeats = 0;
+                        bitWindowSamples = 0;
+                        endRapidBeats = []; // reset end detection since this was data
+
+                        if (frameBits.length === 9) {
+                            const { data, ok } = verifyParityFrame(frameBits);
+                            const ch = bitsToChar(data);
+                            charCount++;
+
+                            if (ok) {
+                                message += ch;
+                                log(consoleId, `  <span class="log-success">[SUCESSO]</span> Char #${charCount}: '${ch}' (ASCII ${ch.charCodeAt(0)}) Dados: [${formatBits(data)}] Paridade: <span class="log-warn">${frameBits[8]}</span> ✓`);
+                            } else {
+                                message += '?';
+                                log(consoleId, `  <span class="log-error">[FALHA DE TRANSMISSÃO]</span> Char #${charCount}: Dados: [${formatBits(data)}] Paridade: <span class="log-error">${frameBits[8]}</span> ✗ Erro de paridade!`);
+                            }
+                            document.getElementById('rx1-decoded').textContent = message || '—';
+                            frameBits = [];
+                        }
+                    }
+                }
+
+                // End by silence timeout
+                if (startDetected && !bitWindowActive && silenceSamples > END_SILENCE_SAMPLES && charCount > 0) {
+                    log(consoleId, '');
+                    log(consoleId, `═══ RESULTADO: "${message}" (${charCount} chars) ═══`, 'log-info log-bold');
+                    stopReceive1();
+                    return;
+                }
+            }
+
+            totalSamplesProcessed += len;
+        };
+
+        // Visualization via requestAnimationFrame (separate from processing)
+        const visDataArray = new Float32Array(analyser.fftSize);
+        function drawWaveform() {
+            if (!rx1Active) return;
+            rx1AnimFrame = requestAnimationFrame(drawWaveform);
+
+            analyser.getFloatTimeDomainData(visDataArray);
+            let sum = 0;
+            for (let i = 0; i < visDataArray.length; i++) sum += visDataArray[i] * visDataArray[i];
+            const rms = Math.sqrt(sum / visDataArray.length);
+
             canvasCtx.fillStyle = '#0d1225';
             canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
             canvasCtx.lineWidth = 2;
             canvasCtx.strokeStyle = rms > CONFIG.BEAT_ENERGY_THRESHOLD ? '#10b981' : '#3b82f6';
             canvasCtx.beginPath();
-            const sliceWidth = canvas.width / bufLen;
+            const sliceWidth = canvas.width / visDataArray.length;
             let x = 0;
-            for (let i = 0; i < bufLen; i++) {
-                const v = dataArray[i];
+            for (let i = 0; i < visDataArray.length; i++) {
+                const v = visDataArray[i];
                 const y = (v + 1) / 2 * canvas.height;
                 if (i === 0) canvasCtx.moveTo(x, y);
                 else canvasCtx.lineTo(x, y);
@@ -1491,7 +1631,6 @@
             }
             canvasCtx.stroke();
 
-            // Threshold line
             canvasCtx.strokeStyle = 'rgba(239,68,68,0.3)';
             canvasCtx.setLineDash([5, 5]);
             const thY = canvas.height / 2 - CONFIG.BEAT_ENERGY_THRESHOLD * canvas.height;
@@ -1500,85 +1639,14 @@
             canvasCtx.lineTo(canvas.width, thY);
             canvasCtx.stroke();
             canvasCtx.setLineDash([]);
-
-            const now = performance.now();
-
-            // Beat detection
-            if (rms > CONFIG.BEAT_ENERGY_THRESHOLD) {
-                if (!inBeat && (now - lastBeatTime > CONFIG.BEAT_MIN_SILENCE_MS)) {
-                    inBeat = true;
-                    beatCount++;
-                    lastBeatTime = now;
-                    document.getElementById('rx1-beats').textContent = beatCount;
-
-                    if (!startDetected) {
-                        if (now - (lastBeatTime - 1) < 500 || startBeatCount === 0) {
-                            startBeatCount++;
-                        } else {
-                            startBeatCount = 1;
-                        }
-                        if (startBeatCount >= 3) {
-                            startDetected = true;
-                            log(consoleId, '✓ Sinal de início detectado! Recebendo dados...', 'log-success log-bold');
-                            log(consoleId, '');
-                            silentFrames = 0;
-                        }
-                    } else {
-                        // Contando batidas na janela
-                        if (!bitWindowActive) {
-                            bitWindowActive = true;
-                            bitWindowStart = now;
-                            bitBeats = 1;
-                        } else {
-                            bitBeats++;
-                        }
-                    }
-                }
-            } else {
-                inBeat = false;
-
-                if (startDetected && bitWindowActive && (now - bitWindowStart > CONFIG.BIT_INTERVAL * 1000 * 0.8)) {
-                    // Janela expirou, decodifica bit
-                    const bit = bitBeats >= 2 ? 1 : 0;
-                    frameBits.push(bit);
-                    bitWindowActive = false;
-                    bitBeats = 0;
-                    silentFrames = 0;
-
-                    if (frameBits.length === 9) {
-                        const { data, ok } = verifyParityFrame(frameBits);
-                        const ch = bitsToChar(data);
-                        charCount++;
-
-                        if (ok) {
-                            message += ch;
-                            log(consoleId, `  <span class="log-success">[SUCESSO]</span> Char #${charCount}: '${ch}' (ASCII ${ch.charCodeAt(0)}) Dados: [${formatBits(data)}] Paridade: <span class="log-warn">${frameBits[8]}</span> ✓`);
-                        } else {
-                            message += '?';
-                            log(consoleId, `  <span class="log-error">[FALHA DE TRANSMISSÃO]</span> Char #${charCount}: Dados: [${formatBits(data)}] Paridade: <span class="log-error">${frameBits[8]}</span> ✗ Erro de paridade!`);
-                        }
-                        document.getElementById('rx1-decoded').textContent = message || '—';
-                        frameBits = [];
-                    }
-                }
-
-                if (startDetected && !bitWindowActive) {
-                    silentFrames++;
-                    if (silentFrames > 200) {
-                        log(consoleId, '');
-                        log(consoleId, `═══ RESULTADO: "${message}" (${charCount} chars) ═══`, 'log-info log-bold');
-                        stopReceive1();
-                    }
-                }
-            }
         }
-
-        processFrame();
+        drawWaveform();
     }
 
     window.stopReceive1 = function() {
         rx1Active = false;
         if (rx1AnimFrame) cancelAnimationFrame(rx1AnimFrame);
+        if (rx1Processor) { rx1Processor.disconnect(); rx1Processor = null; }
         if (rx1Stream) { rx1Stream.getTracks().forEach(t => t.stop()); rx1Stream = null; }
         document.getElementById('rx1-start').style.display = '';
         document.getElementById('rx1-stop').style.display = 'none';
@@ -1587,14 +1655,27 @@
     };
 
     // ================================================================
-    // RECEIVER METHOD 2 (FSK)
+    // RECEIVER METHOD 2 (FSK) — REESCRITO
+    //
+    // Problema original: requestAnimationFrame roda a ~60fps (16ms),
+    // mas cada bit FSK dura 50ms. O analyser com fftSize=4096 (~93ms)
+    // mistura frequências de bits adjacentes. Sem sincronização de
+    // clock de bit, cada bit gera 2-4 amostras redundantes.
+    //
+    // Solução: ScriptProcessorNode processa o áudio em chunks exatos
+    // correspondentes à duração de um bit (FSK_BIT_DURATION * sampleRate).
+    // Goertzel é aplicado em cada janela de bit individualmente, com
+    // sincronização a partir da borda do preâmbulo.
     // ================================================================
     let rx2Active = false;
     let rx2Stream = null;
     let rx2AnimFrame = null;
+    let rx2Processor = null;
 
-    function goertzel(samples, targetFreq, sampleRate) {
+    // Goertzel otimizado para array de samples
+    function goertzelMag(samples, targetFreq, sampleRate) {
         const n = samples.length;
+        if (n === 0) return 0;
         const k = Math.round(n * targetFreq / sampleRate);
         const omega = (2 * Math.PI * k) / n;
         const coeff = 2 * Math.cos(omega);
@@ -1605,6 +1686,11 @@
             s1 = s0;
         }
         return Math.sqrt(s1 * s1 + s2 * s2 - coeff * s1 * s2) / n;
+    }
+
+    // Also keep the old goertzel for the visualizer analyser
+    function goertzel(samples, targetFreq, sampleRate) {
+        return goertzelMag(samples, targetFreq, sampleRate);
     }
 
     window.startReceiveMethod2 = async function() {
@@ -1623,114 +1709,272 @@
         document.getElementById('rx2-status').classList.add('pulsing');
 
         const ctx = getAudioCtx();
+        const actualSR = ctx.sampleRate;
         const source = ctx.createMediaStreamSource(rx2Stream);
+
+        // Analyser for visualization only
         const analyser = ctx.createAnalyser();
         analyser.fftSize = 4096;
         source.connect(analyser);
 
-        const bufLen = analyser.fftSize;
-        const dataArray = new Float32Array(bufLen);
         const canvas = document.getElementById('rx2-canvas');
         const canvasCtx = canvas.getContext('2d');
         canvas.width = canvas.clientWidth * 2;
         canvas.height = 200;
 
-        let preambleDetected = false;
-        let preambleCount = 0;
+        // ScriptProcessorNode for precise sample-level processing
+        // Buffer size = 256 (~5.8ms) for fine-grained analysis
+        const PROC_BUFFER = 256;
+        rx2Processor = ctx.createScriptProcessor(PROC_BUFFER, 1, 1);
+        source.connect(rx2Processor);
+        rx2Processor.connect(ctx.destination);
+
+        // Número exato de amostras por bit
+        const SAMPLES_PER_BIT = Math.round(CONFIG.FSK_BIT_DURATION * actualSR);
+        // Buffer circular para acumular amostras de um bit
+        let bitBuffer = new Float32Array(SAMPLES_PER_BIT);
+        let bitBufferPos = 0;
+
+        // Estado
+        const STATE_WAIT_PREAMBLE = 0;
+        const STATE_WAIT_DATA_START = 1;
+        const STATE_RECEIVING = 2;
+        const STATE_DONE = 3;
+
+        let state = STATE_WAIT_PREAMBLE;
+        let preambleConfidence = 0;          // consecutive preamble detections
+        let silenceAfterPreamble = 0;        // silence samples after preamble
         let allBits = [];
-        let lowEnergyCount = 0;
+        let endDetections = 0;               // consecutive end-freq detections
+        let silenceSamples = 0;              // silence samples for timeout
+        let totalSamplesProcessed = 0;
+        // Larger analysis window for preamble detection (more stable)
+        const PREAMBLE_WINDOW_SIZE = Math.round(0.04 * actualSR); // 40ms
+        let preambleBuffer = new Float32Array(PREAMBLE_WINDOW_SIZE);
+        let preambleBufferPos = 0;
+        // Noise threshold
+        const ENERGY_THRESHOLD = 0.003;
+        // After preamble, wait for silence gap before data starts
+        let dataStarted = false;
+
         const consoleId = 'rx2-log';
 
         clearConsole(consoleId);
         log(consoleId, '═══ RECEPÇÃO — MÉTODO 2 (FSK) ═══', 'log-info log-bold');
+        log(consoleId, `Sample rate: ${actualSR} Hz | Amostras/bit: ${SAMPLES_PER_BIT}`, 'log-info');
         log(consoleId, `Aguardando preâmbulo (${CONFIG.FSK_PREAMBLE_FREQ} Hz)...`, 'log-warn');
 
-        function processFrame() {
-            if (!rx2Active) return;
-            rx2AnimFrame = requestAnimationFrame(processFrame);
+        rx2Processor.onaudioprocess = function(e) {
+            if (!rx2Active || state === STATE_DONE) return;
 
-            analyser.getFloatTimeDomainData(dataArray);
+            const input = e.inputBuffer.getChannelData(0);
+            const len = input.length;
 
-            // RMS
+            // RMS for energy detection
             let sum = 0;
-            for (let i = 0; i < bufLen; i++) sum += dataArray[i] * dataArray[i];
-            const rms = Math.sqrt(sum / bufLen);
+            for (let i = 0; i < len; i++) sum += input[i] * input[i];
+            const rms = Math.sqrt(sum / len);
 
-            // Draw frequency spectrum
+            if (state === STATE_WAIT_PREAMBLE) {
+                // Fill preamble analysis buffer
+                for (let i = 0; i < len; i++) {
+                    preambleBuffer[preambleBufferPos] = input[i];
+                    preambleBufferPos++;
+                    if (preambleBufferPos >= PREAMBLE_WINDOW_SIZE) {
+                        preambleBufferPos = 0;
+
+                        // Analyze for preamble frequency
+                        const magPre = goertzelMag(preambleBuffer, CONFIG.FSK_PREAMBLE_FREQ, actualSR);
+                        const mag0 = goertzelMag(preambleBuffer, CONFIG.FSK_FREQ_0, actualSR);
+                        const mag1 = goertzelMag(preambleBuffer, CONFIG.FSK_FREQ_1, actualSR);
+
+                        if (magPre > mag0 && magPre > mag1 && magPre > ENERGY_THRESHOLD) {
+                            preambleConfidence++;
+                            if (preambleConfidence >= 3) {
+                                state = STATE_WAIT_DATA_START;
+                                silenceAfterPreamble = 0;
+                                dataStarted = false;
+                                log(consoleId, '✓ Preâmbulo detectado! Aguardando início dos dados...', 'log-success log-bold');
+                            }
+                        } else {
+                            preambleConfidence = Math.max(0, preambleConfidence - 1);
+                        }
+                    }
+                }
+            } else if (state === STATE_WAIT_DATA_START) {
+                // Wait for preamble to end (silence gap) then start collecting bits
+                // The TX has a 50ms gap between preamble and first data bit
+                if (rms < ENERGY_THRESHOLD) {
+                    silenceAfterPreamble += len;
+                    if (silenceAfterPreamble > actualSR * 0.02) { // 20ms of silence
+                        state = STATE_RECEIVING;
+                        bitBufferPos = 0;
+                        allBits = [];
+                        silenceSamples = 0;
+                        endDetections = 0;
+                        log(consoleId, 'Recebendo dados FSK...', 'log-info');
+                    }
+                } else {
+                    silenceAfterPreamble = 0;
+                    // Check if we're already hearing data (no gap detected yet)
+                    // Detect first data bit frequencies
+                    const magPre = goertzelMag(input, CONFIG.FSK_PREAMBLE_FREQ, actualSR);
+                    const mag0 = goertzelMag(input, CONFIG.FSK_FREQ_0, actualSR);
+                    const mag1 = goertzelMag(input, CONFIG.FSK_FREQ_1, actualSR);
+                    if ((mag0 > magPre || mag1 > magPre) && (mag0 > ENERGY_THRESHOLD || mag1 > ENERGY_THRESHOLD)) {
+                        // Data already started, transition immediately
+                        state = STATE_RECEIVING;
+                        bitBufferPos = 0;
+                        allBits = [];
+                        silenceSamples = 0;
+                        endDetections = 0;
+                        log(consoleId, 'Recebendo dados FSK...', 'log-info');
+                        // Fall through to process this chunk as data
+                    }
+                }
+                if (state !== STATE_RECEIVING) return;
+            }
+
+            if (state === STATE_RECEIVING) {
+                // Accumulate samples and analyze per-bit windows
+                for (let i = 0; i < len; i++) {
+                    bitBuffer[bitBufferPos] = input[i];
+                    bitBufferPos++;
+
+                    if (bitBufferPos >= SAMPLES_PER_BIT) {
+                        // Full bit window — analyze
+                        const mag0 = goertzelMag(bitBuffer, CONFIG.FSK_FREQ_0, actualSR);
+                        const mag1 = goertzelMag(bitBuffer, CONFIG.FSK_FREQ_1, actualSR);
+                        const magEnd = goertzelMag(bitBuffer, CONFIG.FSK_END_FREQ, actualSR);
+                        const magPre = goertzelMag(bitBuffer, CONFIG.FSK_PREAMBLE_FREQ, actualSR);
+
+                        // Calculate energy in this window
+                        let bitSum = 0;
+                        for (let j = 0; j < SAMPLES_PER_BIT; j++) bitSum += bitBuffer[j] * bitBuffer[j];
+                        const bitRms = Math.sqrt(bitSum / SAMPLES_PER_BIT);
+
+                        if (bitRms < ENERGY_THRESHOLD * 0.5) {
+                            // Silence — might be end of transmission
+                            silenceSamples += SAMPLES_PER_BIT;
+                            if (silenceSamples > actualSR * 0.5 && allBits.length > 0) {
+                                // 500ms of silence after data = end
+                                state = STATE_DONE;
+                                decodeFSKBits(allBits, consoleId);
+                                stopReceive2();
+                                return;
+                            }
+                        } else {
+                            silenceSamples = 0;
+
+                            // Check for end signal
+                            if (magEnd > mag0 && magEnd > mag1 && magEnd > magPre && magEnd > ENERGY_THRESHOLD) {
+                                endDetections++;
+                                if (endDetections >= 2) {
+                                    state = STATE_DONE;
+                                    decodeFSKBits(allBits, consoleId);
+                                    stopReceive2();
+                                    return;
+                                }
+                            } else {
+                                endDetections = 0;
+                                // Classify as bit 0 or bit 1 (ignore preamble freq if still present)
+                                if (mag0 > ENERGY_THRESHOLD * 0.3 || mag1 > ENERGY_THRESHOLD * 0.3) {
+                                    // Only classify if clearly data frequency
+                                    if (mag0 > magPre || mag1 > magPre) {
+                                        const bit = mag1 > mag0 ? 1 : 0;
+                                        allBits.push(bit);
+                                    }
+                                }
+                            }
+                        }
+
+                        // Reset for next bit
+                        bitBufferPos = 0;
+                    }
+                }
+            }
+
+            totalSamplesProcessed += len;
+        };
+
+        // Visualization
+        function drawSpectrum() {
+            if (!rx2Active) return;
+            rx2AnimFrame = requestAnimationFrame(drawSpectrum);
+
             const freqData = new Uint8Array(analyser.frequencyBinCount);
             analyser.getByteFrequencyData(freqData);
             canvasCtx.fillStyle = '#0d1225';
             canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-            canvasCtx.fillStyle = '#3b82f640';
+
+            // Highlight target frequency bins
+            const binWidth = actualSR / analyser.fftSize;
+            const highlightBins = [
+                { freq: CONFIG.FSK_FREQ_0, color: '#06b6d480', label: 'F0' },
+                { freq: CONFIG.FSK_FREQ_1, color: '#f59e0b80', label: 'F1' },
+                { freq: CONFIG.FSK_PREAMBLE_FREQ, color: '#8b5cf680', label: 'PRE' },
+                { freq: CONFIG.FSK_END_FREQ, color: '#ef444480', label: 'END' },
+            ];
+
+            canvasCtx.fillStyle = '#3b82f630';
             const barW = canvas.width / (freqData.length * 0.15);
             for (let i = 0; i < freqData.length * 0.15; i++) {
                 const barH = (freqData[i] / 255) * canvas.height;
                 canvasCtx.fillRect(i * barW, canvas.height - barH, barW - 1, barH);
             }
 
-            // Goertzel for key frequencies
-            const mag0 = goertzel(dataArray, CONFIG.FSK_FREQ_0, ctx.sampleRate);
-            const mag1 = goertzel(dataArray, CONFIG.FSK_FREQ_1, ctx.sampleRate);
-            const magPre = goertzel(dataArray, CONFIG.FSK_PREAMBLE_FREQ, ctx.sampleRate);
-            const magEnd = goertzel(dataArray, CONFIG.FSK_END_FREQ, ctx.sampleRate);
-
-            const maxMag = Math.max(mag0, mag1, magPre, magEnd);
-            let detectedFreq = '—';
-            if (maxMag > 0.005) {
-                if (magPre === maxMag) detectedFreq = CONFIG.FSK_PREAMBLE_FREQ + ' Hz (Preâmbulo)';
-                else if (mag0 === maxMag) detectedFreq = CONFIG.FSK_FREQ_0 + ' Hz (Bit 0)';
-                else if (mag1 === maxMag) detectedFreq = CONFIG.FSK_FREQ_1 + ' Hz (Bit 1)';
-                else if (magEnd === maxMag) detectedFreq = CONFIG.FSK_END_FREQ + ' Hz (Fim)';
+            // Draw frequency labels
+            for (const h of highlightBins) {
+                const binIdx = Math.round(h.freq / binWidth);
+                const xPos = binIdx * barW;
+                canvasCtx.fillStyle = h.color;
+                const barH = (freqData[binIdx] / 255) * canvas.height;
+                canvasCtx.fillRect(xPos - 2, canvas.height - barH, barW + 4, barH);
             }
-            document.getElementById('rx2-freq').textContent = detectedFreq;
 
-            if (rms < 0.002) {
-                lowEnergyCount++;
-                if (preambleDetected && lowEnergyCount > 30 && allBits.length > 0) {
-                    decodeFSK(allBits, consoleId);
-                    stopReceive2();
-                }
-                return;
+            // Show detected freq
+            const visData = new Float32Array(analyser.fftSize);
+            analyser.getFloatTimeDomainData(visData);
+            const m0 = goertzel(visData, CONFIG.FSK_FREQ_0, actualSR);
+            const m1 = goertzel(visData, CONFIG.FSK_FREQ_1, actualSR);
+            const mP = goertzel(visData, CONFIG.FSK_PREAMBLE_FREQ, actualSR);
+            const mE = goertzel(visData, CONFIG.FSK_END_FREQ, actualSR);
+            const maxM = Math.max(m0, m1, mP, mE);
+            let detFreq = '—';
+            if (maxM > 0.003) {
+                if (mP === maxM) detFreq = CONFIG.FSK_PREAMBLE_FREQ + ' Hz (Preâmbulo)';
+                else if (m0 === maxM) detFreq = CONFIG.FSK_FREQ_0 + ' Hz (Bit 0)';
+                else if (m1 === maxM) detFreq = CONFIG.FSK_FREQ_1 + ' Hz (Bit 1)';
+                else if (mE === maxM) detFreq = CONFIG.FSK_END_FREQ + ' Hz (Fim)';
             }
-            lowEnergyCount = 0;
-
-            if (!preambleDetected) {
-                if (magPre > mag0 && magPre > mag1 && magPre > 0.001) {
-                    preambleCount++;
-                    if (preambleCount >= 3) {
-                        preambleDetected = true;
-                        log(consoleId, '✓ Preâmbulo detectado! Demodulando...', 'log-success log-bold');
-                    }
-                } else {
-                    preambleCount = 0;
-                }
-            } else {
-                // Detecta fim
-                if (magEnd > mag0 && magEnd > mag1 && magEnd > 0.001) {
-                    decodeFSK(allBits, consoleId);
-                    stopReceive2();
-                    return;
-                }
-                // Classifica bit
-                if (mag0 > 0.0005 || mag1 > 0.0005) {
-                    const bit = mag0 > mag1 ? 0 : 1;
-                    allBits.push(bit);
-                }
-            }
+            document.getElementById('rx2-freq').textContent = detFreq;
         }
-
-        processFrame();
+        drawSpectrum();
     }
 
-    function decodeFSK(allBits, consoleId) {
+    function decodeFSKBits(allBits, consoleId) {
         log(consoleId, '');
+        log(consoleId, `Total de bits recebidos: ${allBits.length}`, 'log-info');
+
         if (allBits.length < 16) {
-            log(consoleId, `✗ Dados insuficientes: ${allBits.length} bits`, 'log-error');
+            log(consoleId, `✗ Dados insuficientes: ${allBits.length} bits (mínimo 16)`, 'log-error');
             return;
         }
 
-        const dataBits = allBits.slice(0, -8);
-        const crcBits = allBits.slice(-8);
+        // Os dados são: N bytes de dados + 1 byte CRC = (N+1)*8 bits
+        // Precisamos que allBits.length seja múltiplo de 8
+        // Se não for, trim os bits extras (ruído no final)
+        const totalBits = allBits.length;
+        const usableBits = Math.floor(totalBits / 8) * 8;
+        if (usableBits < 16) {
+            log(consoleId, `✗ Dados insuficientes após alinhamento: ${usableBits} bits`, 'log-error');
+            return;
+        }
+
+        const alignedBits = allBits.slice(0, usableBits);
+        const dataBits = alignedBits.slice(0, -8);
+        const crcBits = alignedBits.slice(-8);
+
         const dataBytes = [];
         for (let i = 0; i + 8 <= dataBits.length; i += 8) {
             dataBytes.push(bitsToByte(dataBits.slice(i, i + 8)));
@@ -1767,6 +2011,7 @@
     window.stopReceive2 = function() {
         rx2Active = false;
         if (rx2AnimFrame) cancelAnimationFrame(rx2AnimFrame);
+        if (rx2Processor) { rx2Processor.disconnect(); rx2Processor = null; }
         if (rx2Stream) { rx2Stream.getTracks().forEach(t => t.stop()); rx2Stream = null; }
         document.getElementById('rx2-start').style.display = '';
         document.getElementById('rx2-stop').style.display = 'none';
