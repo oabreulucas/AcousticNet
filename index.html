@@ -1295,12 +1295,12 @@
         const CONFIG = {
             SAMPLE_RATE: 44100,
             BEAT_DURATION: 0.08,
-            BEAT_SILENCE: 0.15,
-            BIT_INTERVAL: 0.7,
+            BEAT_SILENCE: 0.25,
+            BIT_INTERVAL: 1.0,
             BEAT_FREQUENCY: 800,
             BEAT_AMPLITUDE: 0.9,
             BEAT_ENERGY_THRESHOLD: 0.004,
-            BEAT_MIN_SILENCE_MS: 80,
+            BEAT_MIN_SILENCE_MS: 200,
             FSK_FREQ_0: 1200,
             FSK_FREQ_1: 2400,
             FSK_BIT_DURATION: 0.1,
@@ -1440,7 +1440,7 @@
             const totalBits = msg.length * 9;
             document.getElementById('tx1-chars').textContent = msg.length;
             document.getElementById('tx1-bits').textContent = totalBits;
-            const estTime = (3 * 0.23 + 2.5 + msg.length * (9 * CONFIG.BIT_INTERVAL + 0.5) + 1 + 4 * 0.23);
+            const estTime = (3 * 0.28 + 2.5 + msg.length * (9 * CONFIG.BIT_INTERVAL + 0.5) + 1 + 4 * 0.28);
             document.getElementById('tx1-time').textContent = estTime.toFixed(1) + 's';
 
             const consoleId = 'tx1-log';
@@ -1477,7 +1477,7 @@
 
             // Sinal de início: 3 batidas rápidas
             log(consoleId, '▶ Sinal de início (3 batidas rápidas)...', 'log-warn');
-            for (let i = 0; i < 3; i++) { createBeat(t); t += 0.23; }
+            for (let i = 0; i < 3; i++) { createBeat(t); t += 0.28; }
             t += 2.5; // Pausa maior para o AGC do microfone estabilizar
 
             let bitIndex = 0;
@@ -1511,7 +1511,7 @@
             t += 1.0;
             log(consoleId, '');
             log(consoleId, '▶ Sinal de fim (4 batidas rápidas)...', 'log-warn');
-            for (let i = 0; i < 4; i++) { createBeat(t); t += 0.23; }
+            for (let i = 0; i < 4; i++) { createBeat(t); t += 0.28; }
 
             const totalTime = t - ctx.currentTime;
 
@@ -1692,8 +1692,8 @@
             const RAPID_BEAT_WINDOW_SAMPLES = Math.round(0.35 * ctx.sampleRate);
             // Silence threshold to consider transmission ended (3 seconds)
             const END_SILENCE_SAMPLES = Math.round(3.0 * ctx.sampleRate);
-            // Threshold for beat end gap detection (~50% of BIT_INTERVAL)
-            const BIT_WINDOW_THRESH_SAMPLES = Math.round(BIT_INTERVAL_SAMPLES * 0.5);
+            // Threshold for beat end gap detection (0.5s)
+            const BIT_WINDOW_THRESH_SAMPLES = Math.round(0.50 * ctx.sampleRate);
 
             let totalSamplesProcessed = 0;
             let lastBeatSample = -999999;
@@ -1772,7 +1772,7 @@
                             }
                             if (endRapidBeats.length >= 4) {
                                 const span4 = endRapidBeats[endRapidBeats.length - 1] - endRapidBeats[endRapidBeats.length - 4];
-                                if (span4 < ctx.sampleRate * 0.85) { // 4 beats within 850ms
+                                if (span4 < ctx.sampleRate * 1.0) { // 4 beats within 1.0s
                                     log(consoleId, '');
                                     log(consoleId, '✓ Sinal de fim detectado!', 'log-warn');
                                     log(consoleId, `═══ RESULTADO: "${message}" (${charCount} chars) ═══`, 'log-info log-bold');
