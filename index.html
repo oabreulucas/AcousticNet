@@ -1,11 +1,15 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>AcousticNet — Comunicação Acústica | Camada Física</title>
-    <meta name="description" content="Software de Camada Física para Comunicação Acústica - Redes de Computadores UTFPR">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <meta name="description"
+        content="Software de Camada Física para Comunicação Acústica - Redes de Computadores UTFPR">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
     <style>
         /* ============================================================
            AcousticNet — Design System
@@ -32,12 +36,12 @@
             --gradient-green: linear-gradient(135deg, #10b981, #06b6d4);
             --gradient-red: linear-gradient(135deg, #ef4444, #ec4899);
             --gradient-purple: linear-gradient(135deg, #8b5cf6, #3b82f6);
-            --shadow-sm: 0 1px 3px rgba(0,0,0,0.3);
-            --shadow-md: 0 4px 20px rgba(0,0,0,0.4);
-            --shadow-lg: 0 8px 40px rgba(0,0,0,0.5);
-            --shadow-glow-blue: 0 0 30px rgba(59,130,246,0.15);
-            --shadow-glow-green: 0 0 30px rgba(16,185,129,0.15);
-            --shadow-glow-red: 0 0 30px rgba(239,68,68,0.15);
+            --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.3);
+            --shadow-md: 0 4px 20px rgba(0, 0, 0, 0.4);
+            --shadow-lg: 0 8px 40px rgba(0, 0, 0, 0.5);
+            --shadow-glow-blue: 0 0 30px rgba(59, 130, 246, 0.15);
+            --shadow-glow-green: 0 0 30px rgba(16, 185, 129, 0.15);
+            --shadow-glow-red: 0 0 30px rgba(239, 68, 68, 0.15);
             --radius-sm: 8px;
             --radius-md: 12px;
             --radius-lg: 16px;
@@ -45,7 +49,11 @@
             --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
         body {
             font-family: 'Inter', -apple-system, sans-serif;
@@ -182,10 +190,25 @@
             font-weight: 600;
         }
 
-        .badge-green { background: rgba(16,185,129,0.15); color: var(--accent-green); }
-        .badge-blue { background: rgba(59,130,246,0.15); color: var(--accent-blue); }
-        .badge-purple { background: rgba(139,92,246,0.15); color: var(--accent-purple); }
-        .badge-yellow { background: rgba(245,158,11,0.15); color: var(--accent-yellow); }
+        .badge-green {
+            background: rgba(16, 185, 129, 0.15);
+            color: var(--accent-green);
+        }
+
+        .badge-blue {
+            background: rgba(59, 130, 246, 0.15);
+            color: var(--accent-blue);
+        }
+
+        .badge-purple {
+            background: rgba(139, 92, 246, 0.15);
+            color: var(--accent-purple);
+        }
+
+        .badge-yellow {
+            background: rgba(245, 158, 11, 0.15);
+            color: var(--accent-yellow);
+        }
 
         /* Main Content */
         .main {
@@ -195,12 +218,25 @@
             max-width: 1200px;
         }
 
-        .page { display: none; animation: fadeIn 0.4s ease; }
-        .page.active { display: block; }
+        .page {
+            display: none;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .page.active {
+            display: block;
+        }
 
         @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(12px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .page-header {
@@ -231,7 +267,7 @@
         }
 
         .card:hover {
-            border-color: rgba(59,130,246,0.3);
+            border-color: rgba(59, 130, 246, 0.3);
         }
 
         .card-title {
@@ -273,10 +309,12 @@
 
         .input-field:focus {
             border-color: var(--accent-blue);
-            box-shadow: 0 0 0 3px rgba(59,130,246,0.15);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15);
         }
 
-        .input-field::placeholder { color: var(--text-muted); }
+        .input-field::placeholder {
+            color: var(--text-muted);
+        }
 
         /* Buttons */
         .btn {
@@ -295,36 +333,59 @@
             user-select: none;
         }
 
-        .btn:active { transform: scale(0.97); }
+        .btn:active {
+            transform: scale(0.97);
+        }
 
         .btn-primary {
             background: var(--gradient-blue);
             color: white;
-            box-shadow: 0 2px 12px rgba(59,130,246,0.3);
+            box-shadow: 0 2px 12px rgba(59, 130, 246, 0.3);
         }
-        .btn-primary:hover { box-shadow: 0 4px 20px rgba(59,130,246,0.45); filter: brightness(1.1); }
-        .btn-primary:disabled { opacity: 0.5; cursor: not-allowed; filter: none; }
+
+        .btn-primary:hover {
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.45);
+            filter: brightness(1.1);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            filter: none;
+        }
 
         .btn-success {
             background: var(--gradient-green);
             color: white;
-            box-shadow: 0 2px 12px rgba(16,185,129,0.3);
+            box-shadow: 0 2px 12px rgba(16, 185, 129, 0.3);
         }
-        .btn-success:hover { box-shadow: 0 4px 20px rgba(16,185,129,0.45); filter: brightness(1.1); }
+
+        .btn-success:hover {
+            box-shadow: 0 4px 20px rgba(16, 185, 129, 0.45);
+            filter: brightness(1.1);
+        }
 
         .btn-danger {
             background: var(--gradient-red);
             color: white;
-            box-shadow: 0 2px 12px rgba(239,68,68,0.3);
+            box-shadow: 0 2px 12px rgba(239, 68, 68, 0.3);
         }
-        .btn-danger:hover { box-shadow: 0 4px 20px rgba(239,68,68,0.45); filter: brightness(1.1); }
+
+        .btn-danger:hover {
+            box-shadow: 0 4px 20px rgba(239, 68, 68, 0.45);
+            filter: brightness(1.1);
+        }
 
         .btn-outline {
             background: transparent;
             color: var(--text-secondary);
             border: 1px solid var(--border);
         }
-        .btn-outline:hover { border-color: var(--accent-blue); color: var(--accent-blue); }
+
+        .btn-outline:hover {
+            border-color: var(--accent-blue);
+            color: var(--accent-blue);
+        }
 
         .btn-group {
             display: flex;
@@ -347,18 +408,50 @@
             word-break: break-all;
         }
 
-        .console::-webkit-scrollbar { width: 6px; }
-        .console::-webkit-scrollbar-track { background: transparent; }
-        .console::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+        .console::-webkit-scrollbar {
+            width: 6px;
+        }
 
-        .log-success { color: var(--accent-green); }
-        .log-error { color: var(--accent-red); }
-        .log-info { color: var(--accent-cyan); }
-        .log-warn { color: var(--accent-yellow); }
-        .log-muted { color: var(--text-muted); }
-        .log-bold { font-weight: 600; }
-        .log-bit0 { color: var(--accent-cyan); }
-        .log-bit1 { color: var(--accent-yellow); }
+        .console::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .console::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: 3px;
+        }
+
+        .log-success {
+            color: var(--accent-green);
+        }
+
+        .log-error {
+            color: var(--accent-red);
+        }
+
+        .log-info {
+            color: var(--accent-cyan);
+        }
+
+        .log-warn {
+            color: var(--accent-yellow);
+        }
+
+        .log-muted {
+            color: var(--text-muted);
+        }
+
+        .log-bold {
+            font-weight: 600;
+        }
+
+        .log-bit0 {
+            color: var(--accent-cyan);
+        }
+
+        .log-bit1 {
+            color: var(--accent-yellow);
+        }
 
         /* Status Badges */
         .status-badge {
@@ -372,21 +465,21 @@
         }
 
         .status-success {
-            background: rgba(16,185,129,0.12);
+            background: rgba(16, 185, 129, 0.12);
             color: var(--accent-green);
-            border: 1px solid rgba(16,185,129,0.25);
+            border: 1px solid rgba(16, 185, 129, 0.25);
         }
 
         .status-error {
-            background: rgba(239,68,68,0.12);
+            background: rgba(239, 68, 68, 0.12);
             color: var(--accent-red);
-            border: 1px solid rgba(239,68,68,0.25);
+            border: 1px solid rgba(239, 68, 68, 0.25);
         }
 
         .status-waiting {
-            background: rgba(245,158,11,0.12);
+            background: rgba(245, 158, 11, 0.12);
             color: var(--accent-yellow);
-            border: 1px solid rgba(245,158,11,0.25);
+            border: 1px solid rgba(245, 158, 11, 0.25);
         }
 
         /* Canvas Visualizer */
@@ -455,27 +548,47 @@
             border-bottom: 1px solid var(--border);
         }
 
-        .demo-table th:first-child { border-radius: var(--radius-sm) 0 0 0; }
-        .demo-table th:last-child { border-radius: 0 var(--radius-sm) 0 0; }
+        .demo-table th:first-child {
+            border-radius: var(--radius-sm) 0 0 0;
+        }
+
+        .demo-table th:last-child {
+            border-radius: 0 var(--radius-sm) 0 0;
+        }
 
         .demo-table td {
             padding: 10px 14px;
-            border-bottom: 1px solid rgba(42,53,85,0.5);
+            border-bottom: 1px solid rgba(42, 53, 85, 0.5);
             font-family: 'JetBrains Mono', monospace;
             font-size: 12.5px;
         }
 
-        .demo-table tr:last-child td { border-bottom: none; }
-        .demo-table tr:hover td { background: rgba(59,130,246,0.04); }
+        .demo-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .demo-table tr:hover td {
+            background: rgba(59, 130, 246, 0.04);
+        }
 
         .bit-display {
             font-family: 'JetBrains Mono', monospace;
             letter-spacing: 2px;
         }
 
-        .bit-0 { color: var(--accent-cyan); }
-        .bit-1 { color: var(--accent-yellow); }
-        .bit-corrupted { color: var(--accent-red); text-decoration: underline; font-weight: 700; }
+        .bit-0 {
+            color: var(--accent-cyan);
+        }
+
+        .bit-1 {
+            color: var(--accent-yellow);
+        }
+
+        .bit-corrupted {
+            color: var(--accent-red);
+            text-decoration: underline;
+            font-weight: 700;
+        }
 
         /* Info Panels */
         .info-grid {
@@ -493,7 +606,7 @@
         }
 
         .info-card:hover {
-            border-color: rgba(59,130,246,0.3);
+            border-color: rgba(59, 130, 246, 0.3);
             transform: translateY(-2px);
             box-shadow: var(--shadow-md);
         }
@@ -512,12 +625,23 @@
             justify-content: space-between;
             padding: 6px 0;
             font-size: 13px;
-            border-bottom: 1px solid rgba(42,53,85,0.4);
+            border-bottom: 1px solid rgba(42, 53, 85, 0.4);
         }
 
-        .info-card .info-row:last-child { border-bottom: none; }
-        .info-card .info-label { color: var(--text-secondary); }
-        .info-card .info-value { color: var(--text-primary); font-weight: 500; font-family: 'JetBrains Mono', monospace; font-size: 12.5px; }
+        .info-card .info-row:last-child {
+            border-bottom: none;
+        }
+
+        .info-card .info-label {
+            color: var(--text-secondary);
+        }
+
+        .info-card .info-value {
+            color: var(--text-primary);
+            font-weight: 500;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 12.5px;
+        }
 
         /* Progress bar */
         .progress-bar {
@@ -538,11 +662,20 @@
 
         /* Pulse animation */
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+
+            0%,
+            100% {
+                opacity: 1;
+            }
+
+            50% {
+                opacity: 0.5;
+            }
         }
 
-        .pulsing { animation: pulse 1.5s ease-in-out infinite; }
+        .pulsing {
+            animation: pulse 1.5s ease-in-out infinite;
+        }
 
         /* OSI Layer Table */
         .osi-table {
@@ -562,8 +695,8 @@
         }
 
         .osi-table tr:last-child {
-            background: rgba(59,130,246,0.1);
-            border: 1px solid rgba(59,130,246,0.3);
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(59, 130, 246, 0.3);
         }
 
         .osi-table tr:last-child td {
@@ -596,14 +729,31 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .sidebar { width: 60px; }
-            .sidebar .nav-item span, .sidebar .nav-section-title,
-            .sidebar .logo-text, .sidebar-footer, .nav-badge { display: none; }
-            .sidebar .nav-item { justify-content: center; padding: 12px; }
-            .main { margin-left: 60px; padding: 20px; }
+            .sidebar {
+                width: 60px;
+            }
+
+            .sidebar .nav-item span,
+            .sidebar .nav-section-title,
+            .sidebar .logo-text,
+            .sidebar-footer,
+            .nav-badge {
+                display: none;
+            }
+
+            .sidebar .nav-item {
+                justify-content: center;
+                padding: 12px;
+            }
+
+            .main {
+                margin-left: 60px;
+                padding: 20px;
+            }
         }
     </style>
 </head>
+
 <body>
     <div class="app">
         <!-- ============================================================
@@ -687,14 +837,16 @@
             <div class="page active" id="page-tx1">
                 <div class="page-header">
                     <h2>🥁 Transmitir — Método 1 (Batidas)</h2>
-                    <p>Transmissão por impactos sonoros. Bit 0 = 1 batida, Bit 1 = 2 batidas. Quadro de 9 bits com paridade par.</p>
+                    <p>Transmissão por impactos sonoros. Bit 0 = 1 batida, Bit 1 = 2 batidas. Quadro de 9 bits com
+                        paridade par.</p>
                 </div>
 
                 <div class="card">
                     <div class="card-title">⚙️ Configuração</div>
                     <div class="input-group">
                         <label>Mensagem para transmitir</label>
-                        <input type="text" class="input-field" id="tx1-message" placeholder="Digite sua mensagem..." maxlength="50" value="Hi">
+                        <input type="text" class="input-field" id="tx1-message" placeholder="Digite sua mensagem..."
+                            maxlength="50" value="Hi">
                     </div>
                     <div class="btn-group">
                         <button class="btn btn-primary" id="tx1-start" onclick="transmitMethod1()">
@@ -723,7 +875,9 @@
                     </div>
                 </div>
 
-                <div class="progress-bar"><div class="progress-fill" id="tx1-progress"></div></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="tx1-progress"></div>
+                </div>
 
                 <div class="card">
                     <div class="card-title">📋 Log de Transmissão</div>
@@ -735,14 +889,16 @@
             <div class="page" id="page-tx2">
                 <div class="page-header">
                     <h2>〰️ Transmitir — Método 2 (FSK)</h2>
-                    <p>Frequency-Shift Keying. Bit 0 = 1200 Hz, Bit 1 = 2400 Hz. Verificação por CRC-8. Taxa de ~10 bps.</p>
+                    <p>Frequency-Shift Keying. Bit 0 = 1200 Hz, Bit 1 = 2400 Hz. Verificação por CRC-8. Taxa de ~10 bps.
+                    </p>
                 </div>
 
                 <div class="card">
                     <div class="card-title">⚙️ Configuração</div>
                     <div class="input-group">
                         <label>Mensagem para transmitir</label>
-                        <input type="text" class="input-field" id="tx2-message" placeholder="Digite sua mensagem..." maxlength="100" value="UTFPR">
+                        <input type="text" class="input-field" id="tx2-message" placeholder="Digite sua mensagem..."
+                            maxlength="100" value="UTFPR">
                     </div>
                     <div class="btn-group">
                         <button class="btn btn-primary" id="tx2-start" onclick="transmitMethod2()">
@@ -771,7 +927,9 @@
                     </div>
                 </div>
 
-                <div class="progress-bar"><div class="progress-fill" id="tx2-progress"></div></div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="tx2-progress"></div>
+                </div>
 
                 <div class="card">
                     <div class="card-title">📋 Log de Transmissão</div>
@@ -824,7 +982,8 @@
 
                 <div class="card">
                     <div class="card-title">📋 Log de Recepção</div>
-                    <div class="console" id="rx1-log"><span class="log-muted">Clique em "Iniciar Escuta" e faça batidas no microfone...</span></div>
+                    <div class="console" id="rx1-log"><span class="log-muted">Clique em "Iniciar Escuta" e faça batidas
+                            no microfone...</span></div>
                 </div>
             </div>
 
@@ -873,7 +1032,8 @@
 
                 <div class="card">
                     <div class="card-title">📋 Log de Recepção</div>
-                    <div class="console" id="rx2-log"><span class="log-muted">Clique em "Iniciar Escuta FSK" e reproduza um sinal FSK...</span></div>
+                    <div class="console" id="rx2-log"><span class="log-muted">Clique em "Iniciar Escuta FSK" e reproduza
+                            um sinal FSK...</span></div>
                 </div>
             </div>
 
@@ -881,14 +1041,16 @@
             <div class="page" id="page-demoParity">
                 <div class="page-header">
                     <h2>✅ Demonstração — Paridade Par</h2>
-                    <p>Visualize como a detecção de erros por paridade par funciona. Simule corrupção de bits e veja a detecção em ação.</p>
+                    <p>Visualize como a detecção de erros por paridade par funciona. Simule corrupção de bits e veja a
+                        detecção em ação.</p>
                 </div>
 
                 <div class="card">
                     <div class="card-title">⚙️ Teste</div>
                     <div class="input-group">
                         <label>Texto para testar</label>
-                        <input type="text" class="input-field" id="parity-input" placeholder="Digite caracteres..." value="HELLO" maxlength="20">
+                        <input type="text" class="input-field" id="parity-input" placeholder="Digite caracteres..."
+                            value="HELLO" maxlength="20">
                     </div>
                     <div class="btn-group">
                         <button class="btn btn-primary" onclick="demoParity()">▶ Executar Demo</button>
@@ -946,7 +1108,8 @@
                     <div class="card-title">⚙️ Teste</div>
                     <div class="input-group">
                         <label>Mensagens para testar (separadas por vírgula)</label>
-                        <input type="text" class="input-field" id="crc-input" placeholder="msg1, msg2, ..." value="Hi, UTFPR, Redes, OK">
+                        <input type="text" class="input-field" id="crc-input" placeholder="msg1, msg2, ..."
+                            value="Hi, UTFPR, Redes, OK">
                     </div>
                     <div class="btn-group">
                         <button class="btn btn-primary" onclick="demoCRC()">▶ Calcular CRC-8</button>
@@ -1002,61 +1165,119 @@
                 <div class="card">
                     <div class="card-title">🌐 Modelo OSI — 7 Camadas</div>
                     <table class="osi-table">
-                        <tr><td>7</td><td>Aplicação</td><td>HTTP, FTP, DNS, SSH</td></tr>
-                        <tr><td>6</td><td>Apresentação</td><td>SSL/TLS, JPEG, ASCII</td></tr>
-                        <tr><td>5</td><td>Sessão</td><td>NetBIOS, RPC</td></tr>
-                        <tr><td>4</td><td>Transporte</td><td>TCP, UDP</td></tr>
-                        <tr><td>3</td><td>Rede</td><td>IP, ICMP, ARP</td></tr>
-                        <tr><td>2</td><td>Enlace de Dados</td><td>Ethernet, Wi-Fi</td></tr>
-                        <tr><td>1</td><td>Física ← Este projeto</td><td>Cabos, rádio, SOM</td></tr>
+                        <tr>
+                            <td>7</td>
+                            <td>Aplicação</td>
+                            <td>HTTP, FTP, DNS, SSH</td>
+                        </tr>
+                        <tr>
+                            <td>6</td>
+                            <td>Apresentação</td>
+                            <td>SSL/TLS, JPEG, ASCII</td>
+                        </tr>
+                        <tr>
+                            <td>5</td>
+                            <td>Sessão</td>
+                            <td>NetBIOS, RPC</td>
+                        </tr>
+                        <tr>
+                            <td>4</td>
+                            <td>Transporte</td>
+                            <td>TCP, UDP</td>
+                        </tr>
+                        <tr>
+                            <td>3</td>
+                            <td>Rede</td>
+                            <td>IP, ICMP, ARP</td>
+                        </tr>
+                        <tr>
+                            <td>2</td>
+                            <td>Enlace de Dados</td>
+                            <td>Ethernet, Wi-Fi</td>
+                        </tr>
+                        <tr>
+                            <td>1</td>
+                            <td>Física ← Este projeto</td>
+                            <td>Cabos, rádio, SOM</td>
+                        </tr>
                     </table>
                 </div>
 
                 <div class="info-grid">
                     <div class="info-card">
                         <h3>🥁 Método 1 — Batidas</h3>
-                        <div class="info-row"><span class="info-label">Tipo</span><span class="info-value">OOK (On-Off Keying)</span></div>
-                        <div class="info-row"><span class="info-label">Bit 0</span><span class="info-value">1 batida</span></div>
-                        <div class="info-row"><span class="info-label">Bit 1</span><span class="info-value">2 batidas</span></div>
-                        <div class="info-row"><span class="info-label">Frequência</span><span class="info-value">800 Hz</span></div>
-                        <div class="info-row"><span class="info-label">Intervalo/bit</span><span class="info-value">700 ms</span></div>
-                        <div class="info-row"><span class="info-label">Taxa</span><span class="info-value">~1.4 bps</span></div>
-                        <div class="info-row"><span class="info-label">Quadro</span><span class="info-value">9 bits (8+1)</span></div>
-                        <div class="info-row"><span class="info-label">Erro</span><span class="info-value">Paridade Par</span></div>
+                        <div class="info-row"><span class="info-label">Tipo</span><span class="info-value">OOK (On-Off
+                                Keying)</span></div>
+                        <div class="info-row"><span class="info-label">Bit 0</span><span class="info-value">1
+                                batida</span></div>
+                        <div class="info-row"><span class="info-label">Bit 1</span><span class="info-value">2
+                                batidas</span></div>
+                        <div class="info-row"><span class="info-label">Frequência</span><span class="info-value">800
+                                Hz</span></div>
+                        <div class="info-row"><span class="info-label">Intervalo/bit</span><span class="info-value">700
+                                ms</span></div>
+                        <div class="info-row"><span class="info-label">Taxa</span><span class="info-value">~1.4
+                                bps</span></div>
+                        <div class="info-row"><span class="info-label">Quadro</span><span class="info-value">9 bits
+                                (8+1)</span></div>
+                        <div class="info-row"><span class="info-label">Erro</span><span class="info-value">Paridade
+                                Par</span></div>
                     </div>
 
                     <div class="info-card">
                         <h3>〰️ Método 2 — FSK</h3>
-                        <div class="info-row"><span class="info-label">Tipo</span><span class="info-value">Frequency-Shift Keying</span></div>
-                        <div class="info-row"><span class="info-label">Bit 0</span><span class="info-value">1200 Hz</span></div>
-                        <div class="info-row"><span class="info-label">Bit 1</span><span class="info-value">2400 Hz</span></div>
-                        <div class="info-row"><span class="info-label">Duração/bit</span><span class="info-value">100 ms</span></div>
-                        <div class="info-row"><span class="info-label">Taxa bruta</span><span class="info-value">10 bps</span></div>
-                        <div class="info-row"><span class="info-label">Preâmbulo</span><span class="info-value">1800 Hz</span></div>
-                        <div class="info-row"><span class="info-label">Fim</span><span class="info-value">3000 Hz</span></div>
-                        <div class="info-row"><span class="info-label">Erro</span><span class="info-value">CRC-8 (0x07)</span></div>
+                        <div class="info-row"><span class="info-label">Tipo</span><span
+                                class="info-value">Frequency-Shift Keying</span></div>
+                        <div class="info-row"><span class="info-label">Bit 0</span><span class="info-value">1200
+                                Hz</span></div>
+                        <div class="info-row"><span class="info-label">Bit 1</span><span class="info-value">2400
+                                Hz</span></div>
+                        <div class="info-row"><span class="info-label">Duração/bit</span><span class="info-value">100
+                                ms</span></div>
+                        <div class="info-row"><span class="info-label">Taxa bruta</span><span class="info-value">10
+                                bps</span></div>
+                        <div class="info-row"><span class="info-label">Preâmbulo</span><span class="info-value">1800
+                                Hz</span></div>
+                        <div class="info-row"><span class="info-label">Fim</span><span class="info-value">3000 Hz</span>
+                        </div>
+                        <div class="info-row"><span class="info-label">Erro</span><span class="info-value">CRC-8
+                                (0x07)</span></div>
                     </div>
 
                     <div class="info-card">
                         <h3>🔊 Parâmetros de Áudio</h3>
-                        <div class="info-row"><span class="info-label">Amostragem</span><span class="info-value">44100 Hz</span></div>
-                        <div class="info-row"><span class="info-label">Canais</span><span class="info-value">Mono</span></div>
-                        <div class="info-row"><span class="info-label">Resolução</span><span class="info-value">16 bits</span></div>
-                        <div class="info-row"><span class="info-label">Nyquist</span><span class="info-value">22050 Hz</span></div>
-                        <div class="info-row"><span class="info-label">Limiar RMS</span><span class="info-value">0.02</span></div>
-                        <div class="info-row"><span class="info-label">Buffer</span><span class="info-value">1024 samples</span></div>
-                        <div class="info-row"><span class="info-label">Latência</span><span class="info-value">~23 ms</span></div>
-                        <div class="info-row"><span class="info-label">API</span><span class="info-value">Web Audio API</span></div>
+                        <div class="info-row"><span class="info-label">Amostragem</span><span class="info-value">44100
+                                Hz</span></div>
+                        <div class="info-row"><span class="info-label">Canais</span><span class="info-value">Mono</span>
+                        </div>
+                        <div class="info-row"><span class="info-label">Resolução</span><span class="info-value">16
+                                bits</span></div>
+                        <div class="info-row"><span class="info-label">Nyquist</span><span class="info-value">22050
+                                Hz</span></div>
+                        <div class="info-row"><span class="info-label">Limiar RMS</span><span
+                                class="info-value">0.02</span></div>
+                        <div class="info-row"><span class="info-label">Buffer</span><span class="info-value">1024
+                                samples</span></div>
+                        <div class="info-row"><span class="info-label">Latência</span><span class="info-value">~23
+                                ms</span></div>
+                        <div class="info-row"><span class="info-label">API</span><span class="info-value">Web Audio
+                                API</span></div>
                     </div>
 
                     <div class="info-card">
                         <h3>🛡️ Detecção de Erros</h3>
-                        <div class="info-row"><span class="info-label">Paridade Par</span><span class="info-value">1 bit overhead</span></div>
-                        <div class="info-row"><span class="info-label">Par. Detecta</span><span class="info-value">Erros de 1 bit</span></div>
-                        <div class="info-row"><span class="info-label">Par. Não detecta</span><span class="info-value">Erros de 2 bits</span></div>
-                        <div class="info-row"><span class="info-label">CRC-8 Polinômio</span><span class="info-value">x⁸+x²+x+1</span></div>
-                        <div class="info-row"><span class="info-label">CRC Burst</span><span class="info-value">Até 8 bits</span></div>
-                        <div class="info-row"><span class="info-label">CRC Aleatório</span><span class="info-value">99.6%</span></div>
+                        <div class="info-row"><span class="info-label">Paridade Par</span><span class="info-value">1 bit
+                                overhead</span></div>
+                        <div class="info-row"><span class="info-label">Par. Detecta</span><span class="info-value">Erros
+                                de 1 bit</span></div>
+                        <div class="info-row"><span class="info-label">Par. Não detecta</span><span
+                                class="info-value">Erros de 2 bits</span></div>
+                        <div class="info-row"><span class="info-label">CRC-8 Polinômio</span><span
+                                class="info-value">x⁸+x²+x+1</span></div>
+                        <div class="info-row"><span class="info-label">CRC Burst</span><span class="info-value">Até 8
+                                bits</span></div>
+                        <div class="info-row"><span class="info-label">CRC Aleatório</span><span
+                                class="info-value">99.6%</span></div>
                     </div>
                 </div>
             </div>
@@ -1068,1163 +1289,1144 @@
          JAVASCRIPT
          ============================================================ -->
     <script>
-    // ================================================================
-    // CONFIG (espelha config.py)
-    // ================================================================
-    const CONFIG = {
-        SAMPLE_RATE: 44100,
-        BEAT_DURATION: 0.08,
-        BEAT_SILENCE: 0.25,
-        BIT_INTERVAL: 0.7,
-        BEAT_FREQUENCY: 800,
-        BEAT_AMPLITUDE: 0.9,
-        BEAT_ENERGY_THRESHOLD: 0.004,
-        BEAT_MIN_SILENCE_MS: 80,
-        FSK_FREQ_0: 1200,
-        FSK_FREQ_1: 2400,
-        FSK_BIT_DURATION: 0.1,
-        FSK_AMPLITUDE: 0.8,
-        FSK_PREAMBLE_FREQ: 1800,
-        FSK_PREAMBLE_DURATION: 0.5,
-        FSK_END_FREQ: 3000,
-        FSK_END_DURATION: 0.3,
-        CRC8_POLYNOMIAL: 0x07,
-    };
+        // ================================================================
+        // CONFIG (espelha config.py)
+        // ================================================================
+        const CONFIG = {
+            SAMPLE_RATE: 44100,
+            BEAT_DURATION: 0.08,
+            BEAT_SILENCE: 0.25,
+            BIT_INTERVAL: 0.7,
+            BEAT_FREQUENCY: 800,
+            BEAT_AMPLITUDE: 0.9,
+            BEAT_ENERGY_THRESHOLD: 0.004,
+            BEAT_MIN_SILENCE_MS: 80,
+            FSK_FREQ_0: 1200,
+            FSK_FREQ_1: 2400,
+            FSK_BIT_DURATION: 0.1,
+            FSK_AMPLITUDE: 0.8,
+            FSK_PREAMBLE_FREQ: 1800,
+            FSK_PREAMBLE_DURATION: 0.5,
+            FSK_END_FREQ: 3000,
+            FSK_END_DURATION: 0.3,
+            CRC8_POLYNOMIAL: 0x07,
+        };
 
-    // ================================================================
-    // ERROR HANDLER — captura erros para depuração
-    // ================================================================
-    window.onerror = function(msg, url, line, col, error) {
-        console.error('AcousticNet Error:', msg, 'at line', line);
-        return false;
-    };
+        // ================================================================
+        // ERROR HANDLER — captura erros para depuração
+        // ================================================================
+        window.onerror = function (msg, url, line, col, error) {
+            console.error('AcousticNet Error:', msg, 'at line', line);
+            return false;
+        };
 
-    // ================================================================
-    // NAVIGATION
-    // ================================================================
-    window.showPage = function(pageId) {
-        document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-        document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-        document.getElementById('page-' + pageId).classList.add('active');
-        document.getElementById('nav-' + pageId).classList.add('active');
-    };
+        // ================================================================
+        // NAVIGATION
+        // ================================================================
+        window.showPage = function (pageId) {
+            document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+            document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+            document.getElementById('page-' + pageId).classList.add('active');
+            document.getElementById('nav-' + pageId).classList.add('active');
+        };
 
-    window.clearConsole = function(id) {
-        document.getElementById(id).innerHTML = '<span class="log-muted">Limpo.</span>';
-    };
+        window.clearConsole = function (id) {
+            document.getElementById(id).innerHTML = '<span class="log-muted">Limpo.</span>';
+        };
 
-    // ================================================================
-    // ERROR DETECTION (espelha error_detection.py)
-    // ================================================================
-    function charToBits(char) {
-        const code = char.charCodeAt(0) & 0xFF;
-        return Array.from({length: 8}, (_, i) => (code >> (7 - i)) & 1);
-    }
-
-    function bitsToChar(bits) {
-        let val = 0;
-        for (const b of bits) val = (val << 1) | b;
-        return String.fromCharCode(val);
-    }
-
-    function byteToBits(byte) {
-        return Array.from({length: 8}, (_, i) => (byte >> (7 - i)) & 1);
-    }
-
-    function bitsToByte(bits) {
-        let val = 0;
-        for (const b of bits) val = (val << 1) | b;
-        return val;
-    }
-
-    function calculateEvenParity(dataBits) {
-        const ones = dataBits.reduce((s, b) => s + b, 0);
-        return ones % 2 === 0 ? 0 : 1;
-    }
-
-    function buildParityFrame(dataBits) {
-        return [...dataBits, calculateEvenParity(dataBits)];
-    }
-
-    function verifyParityFrame(frameBits) {
-        const data = frameBits.slice(0, 8);
-        const recvParity = frameBits[8];
-        const expectedParity = calculateEvenParity(data);
-        return { data, ok: recvParity === expectedParity };
-    }
-
-    function calculateCRC8(dataBytes) {
-        let crc = 0x00;
-        for (const byte of dataBytes) {
-            crc ^= byte;
-            for (let i = 0; i < 8; i++) {
-                if (crc & 0x80) crc = ((crc << 1) ^ CONFIG.CRC8_POLYNOMIAL) & 0xFF;
-                else crc = (crc << 1) & 0xFF;
-            }
-        }
-        return crc;
-    }
-
-    function verifyCRC8(dataBytes, receivedCRC) {
-        return calculateCRC8(dataBytes) === receivedCRC;
-    }
-
-    function strToBytes(str) {
-        return Array.from(new TextEncoder().encode(str));
-    }
-
-    // ================================================================
-    // LOGGING HELPER
-    // ================================================================
-    function log(consoleId, text, cls = '') {
-        const el = document.getElementById(consoleId);
-        if (el.querySelector('.log-muted:only-child')) el.innerHTML = '';
-        const line = document.createElement('div');
-        line.className = cls;
-        line.innerHTML = text;
-        el.appendChild(line);
-        el.scrollTop = el.scrollHeight;
-    }
-
-    function formatBits(bits) {
-        return bits.map(b => b === 1
-            ? `<span class="bit-1">${b}</span>`
-            : `<span class="bit-0">${b}</span>`
-        ).join('');
-    }
-
-    // ================================================================
-    // AUDIO CONTEXT
-    // ================================================================
-    let audioCtx = null;
-    function getAudioCtx() {
-        if (!audioCtx || audioCtx.state === 'closed') {
-            audioCtx = new (window.AudioContext || window.webkitAudioContext)();
-        }
-        if (audioCtx.state === 'suspended') audioCtx.resume();
-        return audioCtx;
-    }
-
-    // ================================================================
-    // TRANSMITTER METHOD 1 (Batidas)
-    // ================================================================
-    window.transmitMethod1 = async function() {
-        const msg = document.getElementById('tx1-message').value.trim();
-        if (!msg) return;
-
-        const btn = document.getElementById('tx1-start');
-        btn.disabled = true;
-        const ctx = getAudioCtx();
-
-        const totalBits = msg.length * 9;
-        document.getElementById('tx1-chars').textContent = msg.length;
-        document.getElementById('tx1-bits').textContent = totalBits;
-        const estTime = (3 * 0.23 + 1 + msg.length * (9 * CONFIG.BIT_INTERVAL + 0.5) + 1 + 4 * 0.23);
-        document.getElementById('tx1-time').textContent = estTime.toFixed(1) + 's';
-
-        const consoleId = 'tx1-log';
-        clearConsole(consoleId);
-        log(consoleId, '═══ TRANSMISSÃO — MÉTODO 1 (BATIDAS) ═══', 'log-info log-bold');
-        log(consoleId, `Mensagem: "${msg}" | ${msg.length} caracteres | ${totalBits} bits`, 'log-info');
-        log(consoleId, '');
-
-        function createBeat(startTime) {
-            const dur = CONFIG.BEAT_DURATION;
-            const osc1 = ctx.createOscillator(); osc1.frequency.value = 800;
-            const osc2 = ctx.createOscillator(); osc2.frequency.value = 1600;
-            const osc3 = ctx.createOscillator(); osc3.frequency.value = 2400;
-            const g1 = ctx.createGain(); g1.gain.value = 0;
-            const g2 = ctx.createGain(); g2.gain.value = 0;
-            const g3 = ctx.createGain(); g3.gain.value = 0;
-
-            // Envoltória de batida
-            const amp = CONFIG.BEAT_AMPLITUDE;
-            [g1, g2, g3].forEach((g, i) => {
-                const level = [0.5, 0.3, 0.2][i] * amp;
-                g.gain.setValueAtTime(level, startTime);
-                g.gain.exponentialRampToValueAtTime(0.001, startTime + dur);
-            });
-
-            osc1.connect(g1).connect(ctx.destination);
-            osc2.connect(g2).connect(ctx.destination);
-            osc3.connect(g3).connect(ctx.destination);
-
-            [osc1, osc2, osc3].forEach(o => { o.start(startTime); o.stop(startTime + dur); });
+        // ================================================================
+        // ERROR DETECTION (espelha error_detection.py)
+        // ================================================================
+        function charToBits(char) {
+            const code = char.charCodeAt(0) & 0xFF;
+            return Array.from({ length: 8 }, (_, i) => (code >> (7 - i)) & 1);
         }
 
-        let t = ctx.currentTime + 0.1;
+        function bitsToChar(bits) {
+            let val = 0;
+            for (const b of bits) val = (val << 1) | b;
+            return String.fromCharCode(val);
+        }
 
-        // Sinal de início: 3 batidas rápidas
-        log(consoleId, '▶ Sinal de início (3 batidas rápidas)...', 'log-warn');
-        for (let i = 0; i < 3; i++) { createBeat(t); t += 0.23; }
-        t += 1.0;
+        function byteToBits(byte) {
+            return Array.from({ length: 8 }, (_, i) => (byte >> (7 - i)) & 1);
+        }
 
-        let bitIndex = 0;
-        // Transmite cada caractere
-        for (let ci = 0; ci < msg.length; ci++) {
-            const char = msg[ci];
-            const dataBits = charToBits(char);
-            const frame = buildParityFrame(dataBits);
+        function bitsToByte(bits) {
+            let val = 0;
+            for (const b of bits) val = (val << 1) | b;
+            return val;
+        }
 
-            const bitsHtml = formatBits(dataBits);
-            log(consoleId, `  Char '${char}' (ASCII ${char.charCodeAt(0)}) → Dados: [${bitsHtml}] Paridade: <span class="log-warn">${frame[8]}</span>`, 'log-success');
+        function calculateEvenParity(dataBits) {
+            const ones = dataBits.reduce((s, b) => s + b, 0);
+            return ones % 2 === 0 ? 0 : 1;
+        }
 
-            for (const bit of frame) {
-                if (bit === 0) {
-                    t += CONFIG.BEAT_SILENCE;
-                    createBeat(t); t += CONFIG.BEAT_DURATION;
-                    t += CONFIG.BIT_INTERVAL - CONFIG.BEAT_SILENCE - CONFIG.BEAT_DURATION;
-                } else {
-                    t += CONFIG.BEAT_SILENCE;
-                    createBeat(t); t += CONFIG.BEAT_DURATION;
-                    t += CONFIG.BEAT_SILENCE;
-                    createBeat(t); t += CONFIG.BEAT_DURATION;
-                    t += CONFIG.BIT_INTERVAL - 2 * CONFIG.BEAT_SILENCE - 2 * CONFIG.BEAT_DURATION;
+        function buildParityFrame(dataBits) {
+            return [...dataBits, calculateEvenParity(dataBits)];
+        }
+
+        function verifyParityFrame(frameBits) {
+            const data = frameBits.slice(0, 8);
+            const recvParity = frameBits[8];
+            const expectedParity = calculateEvenParity(data);
+            return { data, ok: recvParity === expectedParity };
+        }
+
+        function calculateCRC8(dataBytes) {
+            let crc = 0x00;
+            for (const byte of dataBytes) {
+                crc ^= byte;
+                for (let i = 0; i < 8; i++) {
+                    if (crc & 0x80) crc = ((crc << 1) ^ CONFIG.CRC8_POLYNOMIAL) & 0xFF;
+                    else crc = (crc << 1) & 0xFF;
                 }
-                bitIndex++;
             }
-            t += 0.5; // pausa entre caracteres
+            return crc;
         }
 
-        // Sinal de fim: 4 batidas rápidas
-        t += 1.0;
-        log(consoleId, '');
-        log(consoleId, '▶ Sinal de fim (4 batidas rápidas)...', 'log-warn');
-        for (let i = 0; i < 4; i++) { createBeat(t); t += 0.23; }
-
-        const totalTime = t - ctx.currentTime;
-
-        // Progress bar animation
-        const prog = document.getElementById('tx1-progress');
-        const startT = Date.now();
-        const dur = totalTime * 1000;
-        function updateProg() {
-            const pct = Math.min(100, ((Date.now() - startT) / dur) * 100);
-            prog.style.width = pct + '%';
-            if (pct < 100) requestAnimationFrame(updateProg);
+        function verifyCRC8(dataBytes, receivedCRC) {
+            return calculateCRC8(dataBytes) === receivedCRC;
         }
-        updateProg();
 
-        setTimeout(() => {
+        function strToBytes(str) {
+            return Array.from(new TextEncoder().encode(str));
+        }
+
+        // ================================================================
+        // LOGGING HELPER
+        // ================================================================
+        function log(consoleId, text, cls = '') {
+            const el = document.getElementById(consoleId);
+            if (el.querySelector('.log-muted:only-child')) el.innerHTML = '';
+            const line = document.createElement('div');
+            line.className = cls;
+            line.innerHTML = text;
+            el.appendChild(line);
+            el.scrollTop = el.scrollHeight;
+        }
+
+        function formatBits(bits) {
+            return bits.map(b => b === 1
+                ? `<span class="bit-1">${b}</span>`
+                : `<span class="bit-0">${b}</span>`
+            ).join('');
+        }
+
+        // ================================================================
+        // AUDIO CONTEXT
+        // ================================================================
+        let audioCtx = null;
+        function getAudioCtx() {
+            if (!audioCtx || audioCtx.state === 'closed') {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+            }
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            return audioCtx;
+        }
+
+        // ================================================================
+        // TRANSMITTER METHOD 1 (Batidas)
+        // ================================================================
+        window.transmitMethod1 = async function () {
+            const msg = document.getElementById('tx1-message').value.trim();
+            if (!msg) return;
+
+            const btn = document.getElementById('tx1-start');
+            btn.disabled = true;
+            const ctx = getAudioCtx();
+
+            const totalBits = msg.length * 9;
+            document.getElementById('tx1-chars').textContent = msg.length;
+            document.getElementById('tx1-bits').textContent = totalBits;
+            const estTime = (3 * 0.23 + 1 + msg.length * (9 * CONFIG.BIT_INTERVAL + 0.5) + 1 + 4 * 0.23);
+            document.getElementById('tx1-time').textContent = estTime.toFixed(1) + 's';
+
+            const consoleId = 'tx1-log';
+            clearConsole(consoleId);
+            log(consoleId, '═══ TRANSMISSÃO — MÉTODO 1 (BATIDAS) ═══', 'log-info log-bold');
+            log(consoleId, `Mensagem: "${msg}" | ${msg.length} caracteres | ${totalBits} bits`, 'log-info');
             log(consoleId, '');
-            log(consoleId, '✓ TRANSMISSÃO MÉTODO 1 CONCLUÍDA COM SUCESSO', 'log-success log-bold');
-            log(consoleId, `  Tempo total: ${totalTime.toFixed(2)}s`, 'log-info');
-            btn.disabled = false;
-            prog.style.width = '100%';
-        }, totalTime * 1000);
-    }
 
-    // ================================================================
-    // TRANSMITTER METHOD 2 (FSK)
-    // ================================================================
-    window.transmitMethod2 = async function() {
-        const msg = document.getElementById('tx2-message').value.trim();
-        if (!msg) return;
+            function createBeat(startTime) {
+                const dur = CONFIG.BEAT_DURATION;
+                const osc1 = ctx.createOscillator(); osc1.frequency.value = 800;
+                const osc2 = ctx.createOscillator(); osc2.frequency.value = 1600;
+                const osc3 = ctx.createOscillator(); osc3.frequency.value = 2400;
+                const g1 = ctx.createGain(); g1.gain.value = 0;
+                const g2 = ctx.createGain(); g2.gain.value = 0;
+                const g3 = ctx.createGain(); g3.gain.value = 0;
 
-        const btn = document.getElementById('tx2-start');
-        btn.disabled = true;
-        const ctx = getAudioCtx();
+                // Envoltória de batida
+                const amp = CONFIG.BEAT_AMPLITUDE;
+                [g1, g2, g3].forEach((g, i) => {
+                    const level = [0.5, 0.3, 0.2][i] * amp;
+                    g.gain.setValueAtTime(level, startTime);
+                    g.gain.exponentialRampToValueAtTime(0.001, startTime + dur);
+                });
 
-        const dataBytes = strToBytes(msg);
-        const crc = calculateCRC8(dataBytes);
-        const crcBits = byteToBits(crc);
-        const totalDataBits = dataBytes.length * 8;
-        const totalBits = totalDataBits + 8;
+                osc1.connect(g1).connect(ctx.destination);
+                osc2.connect(g2).connect(ctx.destination);
+                osc3.connect(g3).connect(ctx.destination);
 
-        document.getElementById('tx2-bytes').textContent = dataBytes.length;
-        document.getElementById('tx2-crc').textContent = '0x' + crc.toString(16).toUpperCase().padStart(2, '0');
+                [osc1, osc2, osc3].forEach(o => { o.start(startTime); o.stop(startTime + dur); });
+            }
 
-        const consoleId = 'tx2-log';
-        clearConsole(consoleId);
-        log(consoleId, '═══ TRANSMISSÃO — MÉTODO 2 (FSK) ═══', 'log-info log-bold');
-        log(consoleId, `Mensagem: "${msg}" | ${dataBytes.length} bytes | CRC-8: 0x${crc.toString(16).toUpperCase().padStart(2,'0')}`, 'log-info');
-        log(consoleId, `Frequências: Bit 0 = ${CONFIG.FSK_FREQ_0} Hz | Bit 1 = ${CONFIG.FSK_FREQ_1} Hz`, 'log-info');
-        log(consoleId, '');
+            let t = ctx.currentTime + 0.1;
 
-        function playTone(freq, startTime, duration) {
-            const osc = ctx.createOscillator();
-            osc.frequency.value = freq;
-            osc.type = 'sine';
-            const gain = ctx.createGain();
-            const fadeTime = 0.005;
-            gain.gain.setValueAtTime(0, startTime);
-            gain.gain.linearRampToValueAtTime(CONFIG.FSK_AMPLITUDE, startTime + fadeTime);
-            gain.gain.setValueAtTime(CONFIG.FSK_AMPLITUDE, startTime + duration - fadeTime);
-            gain.gain.linearRampToValueAtTime(0, startTime + duration);
-            osc.connect(gain).connect(ctx.destination);
-            osc.start(startTime);
-            osc.stop(startTime + duration);
+            // Sinal de início: 3 batidas rápidas
+            log(consoleId, '▶ Sinal de início (3 batidas rápidas)...', 'log-warn');
+            for (let i = 0; i < 3; i++) { createBeat(t); t += 0.23; }
+            t += 1.0;
+
+            let bitIndex = 0;
+            // Transmite cada caractere
+            for (let ci = 0; ci < msg.length; ci++) {
+                const char = msg[ci];
+                const dataBits = charToBits(char);
+                const frame = buildParityFrame(dataBits);
+
+                const bitsHtml = formatBits(dataBits);
+                log(consoleId, `  Char '${char}' (ASCII ${char.charCodeAt(0)}) → Dados: [${bitsHtml}] Paridade: <span class="log-warn">${frame[8]}</span>`, 'log-success');
+
+                for (const bit of frame) {
+                    if (bit === 0) {
+                        t += CONFIG.BEAT_SILENCE;
+                        createBeat(t); t += CONFIG.BEAT_DURATION;
+                        t += CONFIG.BIT_INTERVAL - CONFIG.BEAT_SILENCE - CONFIG.BEAT_DURATION;
+                    } else {
+                        t += CONFIG.BEAT_SILENCE;
+                        createBeat(t); t += CONFIG.BEAT_DURATION;
+                        t += CONFIG.BEAT_SILENCE;
+                        createBeat(t); t += CONFIG.BEAT_DURATION;
+                        t += CONFIG.BIT_INTERVAL - 2 * CONFIG.BEAT_SILENCE - 2 * CONFIG.BEAT_DURATION;
+                    }
+                    bitIndex++;
+                }
+                t += 0.5; // pausa entre caracteres
+            }
+
+            // Sinal de fim: 4 batidas rápidas
+            t += 1.0;
+            log(consoleId, '');
+            log(consoleId, '▶ Sinal de fim (4 batidas rápidas)...', 'log-warn');
+            for (let i = 0; i < 4; i++) { createBeat(t); t += 0.23; }
+
+            const totalTime = t - ctx.currentTime;
+
+            // Progress bar animation
+            const prog = document.getElementById('tx1-progress');
+            const startT = Date.now();
+            const dur = totalTime * 1000;
+            function updateProg() {
+                const pct = Math.min(100, ((Date.now() - startT) / dur) * 100);
+                prog.style.width = pct + '%';
+                if (pct < 100) requestAnimationFrame(updateProg);
+            }
+            updateProg();
+
+            setTimeout(() => {
+                log(consoleId, '');
+                log(consoleId, '✓ TRANSMISSÃO MÉTODO 1 CONCLUÍDA COM SUCESSO', 'log-success log-bold');
+                log(consoleId, `  Tempo total: ${totalTime.toFixed(2)}s`, 'log-info');
+                btn.disabled = false;
+                prog.style.width = '100%';
+            }, totalTime * 1000);
         }
 
-        let t = ctx.currentTime + 0.1;
+        // ================================================================
+        // TRANSMITTER METHOD 2 (FSK)
+        // ================================================================
+        window.transmitMethod2 = async function () {
+            const msg = document.getElementById('tx2-message').value.trim();
+            if (!msg) return;
 
-        // 1. Preâmbulo
-        log(consoleId, `▶ Preâmbulo (${CONFIG.FSK_PREAMBLE_FREQ} Hz, ${CONFIG.FSK_PREAMBLE_DURATION}s)...`, 'log-warn');
-        playTone(CONFIG.FSK_PREAMBLE_FREQ, t, CONFIG.FSK_PREAMBLE_DURATION);
-        t += CONFIG.FSK_PREAMBLE_DURATION;
+            const btn = document.getElementById('tx2-start');
+            btn.disabled = true;
+            const ctx = getAudioCtx();
 
-        // 2. Dados
-        for (let i = 0; i < dataBytes.length; i++) {
-            const bits = byteToBits(dataBytes[i]);
-            const ch = dataBytes[i] >= 32 && dataBytes[i] < 127 ? String.fromCharCode(dataBytes[i]) : '?';
-            log(consoleId, `  Byte ${i+1}/${dataBytes.length}: '${ch}' (0x${dataBytes[i].toString(16).toUpperCase().padStart(2,'0')}) → [${formatBits(bits)}]`, 'log-success');
-            for (const bit of bits) {
+            const dataBytes = strToBytes(msg);
+            const crc = calculateCRC8(dataBytes);
+            const crcBits = byteToBits(crc);
+            const totalDataBits = dataBytes.length * 8;
+            const totalBits = totalDataBits + 8;
+
+            document.getElementById('tx2-bytes').textContent = dataBytes.length;
+            document.getElementById('tx2-crc').textContent = '0x' + crc.toString(16).toUpperCase().padStart(2, '0');
+
+            const consoleId = 'tx2-log';
+            clearConsole(consoleId);
+            log(consoleId, '═══ TRANSMISSÃO — MÉTODO 2 (FSK) ═══', 'log-info log-bold');
+            log(consoleId, `Mensagem: "${msg}" | ${dataBytes.length} bytes | CRC-8: 0x${crc.toString(16).toUpperCase().padStart(2, '0')}`, 'log-info');
+            log(consoleId, `Frequências: Bit 0 = ${CONFIG.FSK_FREQ_0} Hz | Bit 1 = ${CONFIG.FSK_FREQ_1} Hz`, 'log-info');
+            log(consoleId, '');
+
+            function playTone(freq, startTime, duration) {
+                const osc = ctx.createOscillator();
+                osc.frequency.value = freq;
+                osc.type = 'sine';
+                const gain = ctx.createGain();
+                const fadeTime = 0.005;
+                gain.gain.setValueAtTime(0, startTime);
+                gain.gain.linearRampToValueAtTime(CONFIG.FSK_AMPLITUDE, startTime + fadeTime);
+                gain.gain.setValueAtTime(CONFIG.FSK_AMPLITUDE, startTime + duration - fadeTime);
+                gain.gain.linearRampToValueAtTime(0, startTime + duration);
+                osc.connect(gain).connect(ctx.destination);
+                osc.start(startTime);
+                osc.stop(startTime + duration);
+            }
+
+            let t = ctx.currentTime + 0.1;
+
+            // 1. Preâmbulo
+            log(consoleId, `▶ Preâmbulo (${CONFIG.FSK_PREAMBLE_FREQ} Hz, ${CONFIG.FSK_PREAMBLE_DURATION}s)...`, 'log-warn');
+            playTone(CONFIG.FSK_PREAMBLE_FREQ, t, CONFIG.FSK_PREAMBLE_DURATION);
+            t += CONFIG.FSK_PREAMBLE_DURATION;
+
+            // 2. Dados
+            for (let i = 0; i < dataBytes.length; i++) {
+                const bits = byteToBits(dataBytes[i]);
+                const ch = dataBytes[i] >= 32 && dataBytes[i] < 127 ? String.fromCharCode(dataBytes[i]) : '?';
+                log(consoleId, `  Byte ${i + 1}/${dataBytes.length}: '${ch}' (0x${dataBytes[i].toString(16).toUpperCase().padStart(2, '0')}) → [${formatBits(bits)}]`, 'log-success');
+                for (const bit of bits) {
+                    const freq = bit === 0 ? CONFIG.FSK_FREQ_0 : CONFIG.FSK_FREQ_1;
+                    playTone(freq, t, CONFIG.FSK_BIT_DURATION);
+                    t += CONFIG.FSK_BIT_DURATION;
+                }
+            }
+
+            // 3. CRC
+            log(consoleId, `  CRC-8: [${formatBits(crcBits)}] (0x${crc.toString(16).toUpperCase().padStart(2, '0')})`, 'log-warn');
+            for (const bit of crcBits) {
                 const freq = bit === 0 ? CONFIG.FSK_FREQ_0 : CONFIG.FSK_FREQ_1;
                 playTone(freq, t, CONFIG.FSK_BIT_DURATION);
                 t += CONFIG.FSK_BIT_DURATION;
             }
+
+            // 4. Fim
+            playTone(CONFIG.FSK_END_FREQ, t, CONFIG.FSK_END_DURATION);
+            t += CONFIG.FSK_END_DURATION;
+
+            const totalTime = t - ctx.currentTime;
+            document.getElementById('tx2-time').textContent = totalTime.toFixed(2) + 's';
+
+            const prog = document.getElementById('tx2-progress');
+            const startT = Date.now();
+            const dur = totalTime * 1000;
+            function up() {
+                const pct = Math.min(100, ((Date.now() - startT) / dur) * 100);
+                prog.style.width = pct + '%';
+                if (pct < 100) requestAnimationFrame(up);
+            }
+            up();
+
+            setTimeout(() => {
+                log(consoleId, '');
+                log(consoleId, `✓ TRANSMISSÃO FSK CONCLUÍDA | Tempo: ${totalTime.toFixed(2)}s | Taxa efetiva: ${(totalDataBits / totalTime).toFixed(1)} bps`, 'log-success log-bold');
+                btn.disabled = false;
+                prog.style.width = '100%';
+            }, totalTime * 1000);
         }
 
-        // 3. CRC
-        log(consoleId, `  CRC-8: [${formatBits(crcBits)}] (0x${crc.toString(16).toUpperCase().padStart(2,'0')})`, 'log-warn');
-        for (const bit of crcBits) {
-            const freq = bit === 0 ? CONFIG.FSK_FREQ_0 : CONFIG.FSK_FREQ_1;
-            playTone(freq, t, CONFIG.FSK_BIT_DURATION);
-            t += CONFIG.FSK_BIT_DURATION;
-        }
+        // ================================================================
+        // RECEIVER METHOD 1 (Batidas) — CORRIGIDO
+        // Usa ScriptProcessorNode para detecção precisa de batidas com
+        // timing baseado em amostras em vez de requestAnimationFrame.
+        // ================================================================
+        let rx1Active = false;
+        let rx1Stream = null;
+        let rx1AnimFrame = null;
+        let rx1Processor = null;
 
-        // 4. Fim
-        playTone(CONFIG.FSK_END_FREQ, t, CONFIG.FSK_END_DURATION);
-        t += CONFIG.FSK_END_DURATION;
+        window.startReceiveMethod1 = async function () {
+            if (rx1Active) return;
+            try {
+                rx1Stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            } catch (e) {
+                log('rx1-log', '✗ Erro ao acessar microfone: ' + e.message, 'log-error');
+                return;
+            }
 
-        const totalTime = t - ctx.currentTime;
-        document.getElementById('tx2-time').textContent = totalTime.toFixed(2) + 's';
+            rx1Active = true;
+            document.getElementById('rx1-start').style.display = 'none';
+            document.getElementById('rx1-stop').style.display = '';
+            document.getElementById('rx1-status').textContent = '🔴';
+            document.getElementById('rx1-status').classList.add('pulsing');
 
-        const prog = document.getElementById('tx2-progress');
-        const startT = Date.now();
-        const dur = totalTime * 1000;
-        function up() {
-            const pct = Math.min(100, ((Date.now() - startT) / dur) * 100);
-            prog.style.width = pct + '%';
-            if (pct < 100) requestAnimationFrame(up);
-        }
-        up();
+            const ctx = getAudioCtx();
+            const source = ctx.createMediaStreamSource(rx1Stream);
+            const analyser = ctx.createAnalyser();
+            analyser.fftSize = 2048;
+            source.connect(analyser);
 
-        setTimeout(() => {
-            log(consoleId, '');
-            log(consoleId, `✓ TRANSMISSÃO FSK CONCLUÍDA | Tempo: ${totalTime.toFixed(2)}s | Taxa efetiva: ${(totalDataBits / totalTime).toFixed(1)} bps`, 'log-success log-bold');
-            btn.disabled = false;
-            prog.style.width = '100%';
-        }, totalTime * 1000);
-    }
+            // ScriptProcessorNode para timing preciso (2048 samples = ~46ms)
+            const PROC_SIZE = 2048;
+            rx1Processor = ctx.createScriptProcessor(PROC_SIZE, 1, 1);
+            source.connect(rx1Processor);
+            rx1Processor.connect(ctx.destination); // necessário para manter ativo
 
-    // ================================================================
-    // RECEIVER METHOD 1 (Batidas) — CORRIGIDO
-    // Usa ScriptProcessorNode para detecção precisa de batidas com
-    // timing baseado em amostras em vez de requestAnimationFrame.
-    // ================================================================
-    let rx1Active = false;
-    let rx1Stream = null;
-    let rx1AnimFrame = null;
-    let rx1Processor = null;
+            const canvas = document.getElementById('rx1-canvas');
+            const canvasCtx = canvas.getContext('2d');
+            canvas.width = canvas.clientWidth * 2;
+            canvas.height = 200;
 
-    window.startReceiveMethod1 = async function() {
-        if (rx1Active) return;
-        try {
-            rx1Stream = await navigator.mediaDevices.getUserMedia({ audio: true });
-        } catch (e) {
-            log('rx1-log', '✗ Erro ao acessar microfone: ' + e.message, 'log-error');
-            return;
-        }
+            let beatCount = 0;
+            let inBeat = false;
+            let frameBits = [];
+            let message = '';
+            let charCount = 0;
+            let startDetected = false;
+            let rapidBeatTimes = [];    // timestamps of rapid beats for start detection
+            let silenceSamples = 0;     // how many samples of silence since last beat
+            let bitBeats = 0;           // number of beats in current bit window
+            let bitWindowSamples = 0;   // samples elapsed in current bit window
+            let bitWindowActive = false;
+            let endRapidBeats = [];     // detect end signal (4 rapid beats)
+            let samplesSinceLastBeat = 0;
+            const consoleId = 'rx1-log';
 
-        rx1Active = true;
-        document.getElementById('rx1-start').style.display = 'none';
-        document.getElementById('rx1-stop').style.display = '';
-        document.getElementById('rx1-status').textContent = '🔴';
-        document.getElementById('rx1-status').classList.add('pulsing');
+            const BIT_INTERVAL_SAMPLES = Math.round(CONFIG.BIT_INTERVAL * ctx.sampleRate);
+            const BEAT_MIN_SILENCE_SAMPLES = Math.round((CONFIG.BEAT_MIN_SILENCE_MS / 1000) * ctx.sampleRate);
+            // Time window: beats within 350ms are "rapid"
+            const RAPID_BEAT_WINDOW_SAMPLES = Math.round(0.35 * ctx.sampleRate);
+            // Silence threshold to consider transmission ended (3 seconds)
+            const END_SILENCE_SAMPLES = Math.round(3.0 * ctx.sampleRate);
+            // Threshold for beat end gap detection (~60% of BIT_INTERVAL)
+            const BIT_WINDOW_THRESH_SAMPLES = Math.round(BIT_INTERVAL_SAMPLES * 0.6);
 
-        const ctx = getAudioCtx();
-        const source = ctx.createMediaStreamSource(rx1Stream);
-        const analyser = ctx.createAnalyser();
-        analyser.fftSize = 2048;
-        source.connect(analyser);
+            let totalSamplesProcessed = 0;
+            let lastBeatSample = -999999;
 
-        // ScriptProcessorNode para timing preciso (2048 samples = ~46ms)
-        const PROC_SIZE = 2048;
-        rx1Processor = ctx.createScriptProcessor(PROC_SIZE, 1, 1);
-        source.connect(rx1Processor);
-        rx1Processor.connect(ctx.destination); // necessário para manter ativo
+            clearConsole(consoleId);
+            log(consoleId, '═══ RECEPÇÃO — MÉTODO 1 (BATIDAS) ═══', 'log-info log-bold');
+            log(consoleId, 'Aguardando sinal de início (3 batidas rápidas)...', 'log-warn');
 
-        const canvas = document.getElementById('rx1-canvas');
-        const canvasCtx = canvas.getContext('2d');
-        canvas.width = canvas.clientWidth * 2;
-        canvas.height = 200;
+            rx1Processor.onaudioprocess = function (e) {
+                if (!rx1Active) return;
 
-        let beatCount = 0;
-        let inBeat = false;
-        let frameBits = [];
-        let message = '';
-        let charCount = 0;
-        let startDetected = false;
-        let rapidBeatTimes = [];    // timestamps of rapid beats for start detection
-        let silenceSamples = 0;     // how many samples of silence since last beat
-        let bitBeats = 0;           // number of beats in current bit window
-        let bitWindowSamples = 0;   // samples elapsed in current bit window
-        let bitWindowActive = false;
-        let endRapidBeats = [];     // detect end signal (4 rapid beats)
-        let samplesSinceLastBeat = 0;
-        const consoleId = 'rx1-log';
+                const input = e.inputBuffer.getChannelData(0);
+                const len = input.length;
 
-        const BIT_INTERVAL_SAMPLES = Math.round(CONFIG.BIT_INTERVAL * ctx.sampleRate);
-        const BEAT_MIN_SILENCE_SAMPLES = Math.round((CONFIG.BEAT_MIN_SILENCE_MS / 1000) * ctx.sampleRate);
-        // Time window: beats within 350ms are "rapid"
-        const RAPID_BEAT_WINDOW_SAMPLES = Math.round(0.35 * ctx.sampleRate);
-        // Silence threshold to consider transmission ended (3 seconds)
-        const END_SILENCE_SAMPLES = Math.round(3.0 * ctx.sampleRate);
-        // Threshold for beat end gap detection (~60% of BIT_INTERVAL)
-        const BIT_WINDOW_THRESH_SAMPLES = Math.round(BIT_INTERVAL_SAMPLES * 0.6);
+                // Calculate RMS for this buffer
+                let sum = 0;
+                for (let i = 0; i < len; i++) sum += input[i] * input[i];
+                const rms = Math.sqrt(sum / len);
+                document.getElementById('rx1-rms').textContent = rms.toFixed(4);
 
-        let totalSamplesProcessed = 0;
-        let lastBeatSample = -999999;
+                // Detect beat in this chunk
+                const isBeatChunk = rms > CONFIG.BEAT_ENERGY_THRESHOLD;
 
-        clearConsole(consoleId);
-        log(consoleId, '═══ RECEPÇÃO — MÉTODO 1 (BATIDAS) ═══', 'log-info log-bold');
-        log(consoleId, 'Aguardando sinal de início (3 batidas rápidas)...', 'log-warn');
+                if (isBeatChunk) {
+                    if (!inBeat && (totalSamplesProcessed - lastBeatSample) > BEAT_MIN_SILENCE_SAMPLES) {
+                        // New beat detected!
+                        inBeat = true;
+                        beatCount++;
+                        lastBeatSample = totalSamplesProcessed;
+                        samplesSinceLastBeat = 0;
+                        document.getElementById('rx1-beats').textContent = beatCount;
 
-        rx1Processor.onaudioprocess = function(e) {
-            if (!rx1Active) return;
-
-            const input = e.inputBuffer.getChannelData(0);
-            const len = input.length;
-
-            // Calculate RMS for this buffer
-            let sum = 0;
-            for (let i = 0; i < len; i++) sum += input[i] * input[i];
-            const rms = Math.sqrt(sum / len);
-            document.getElementById('rx1-rms').textContent = rms.toFixed(4);
-
-            // Detect beat in this chunk
-            const isBeatChunk = rms > CONFIG.BEAT_ENERGY_THRESHOLD;
-
-            if (isBeatChunk) {
-                if (!inBeat && (totalSamplesProcessed - lastBeatSample) > BEAT_MIN_SILENCE_SAMPLES) {
-                    // New beat detected!
-                    inBeat = true;
-                    beatCount++;
-                    lastBeatSample = totalSamplesProcessed;
-                    samplesSinceLastBeat = 0;
-                    document.getElementById('rx1-beats').textContent = beatCount;
-
-                    if (!startDetected) {
-                        // Track rapid beats for start signal detection
-                        rapidBeatTimes.push(totalSamplesProcessed);
-                        // Remove beats that are too old from the window
-                        while (rapidBeatTimes.length > 0 &&
-                               (totalSamplesProcessed - rapidBeatTimes[0]) > ctx.sampleRate * 1.5) {
-                            rapidBeatTimes.shift();
-                        }
-                        // Check if we have 3 rapid beats within the window
-                        if (rapidBeatTimes.length >= 3) {
-                            const span = rapidBeatTimes[rapidBeatTimes.length - 1] - rapidBeatTimes[rapidBeatTimes.length - 3];
-                            if (span < ctx.sampleRate * 0.8) { // 3 beats within 800ms
-                                startDetected = true;
-                                log(consoleId, '✓ Sinal de início detectado! Recebendo dados...', 'log-success log-bold');
-                                log(consoleId, '');
-                                // Wait a bit before starting bit collection (skip the pause after start signal)
-                                silenceSamples = 0;
-                                bitWindowActive = false;
-                                bitBeats = 0;
+                        if (!startDetected) {
+                            // Track rapid beats for start signal detection
+                            rapidBeatTimes.push(totalSamplesProcessed);
+                            // Remove beats that are too old from the window
+                            while (rapidBeatTimes.length > 0 &&
+                                (totalSamplesProcessed - rapidBeatTimes[0]) > ctx.sampleRate * 1.5) {
+                                rapidBeatTimes.shift();
+                            }
+                            // Check if we have 3 rapid beats within the window
+                            if (rapidBeatTimes.length >= 3) {
+                                const span = rapidBeatTimes[rapidBeatTimes.length - 1] - rapidBeatTimes[rapidBeatTimes.length - 3];
+                                if (span < ctx.sampleRate * 0.8) { // 3 beats within 800ms
+                                    startDetected = true;
+                                    log(consoleId, '✓ Sinal de início detectado! Recebendo dados...', 'log-success log-bold');
+                                    log(consoleId, '');
+                                    // Wait a bit before starting bit collection (skip the pause after start signal)
+                                    silenceSamples = 0;
+                                    bitWindowActive = false;
+                                    bitBeats = 0;
+                                    bitWindowSamples = 0;
+                                }
+                            }
+                        } else {
+                            // Data reception - count beats per bit window
+                            if (!bitWindowActive) {
+                                bitWindowActive = true;
+                                bitBeats = 1;
                                 bitWindowSamples = 0;
-                            }
-                        }
-                    } else {
-                        // Data reception - count beats per bit window
-                        if (!bitWindowActive) {
-                            bitWindowActive = true;
-                            bitBeats = 1;
-                            bitWindowSamples = 0;
-                        } else {
-                            bitBeats++;
-                        }
-                        // Also track for end signal
-                        endRapidBeats.push(totalSamplesProcessed);
-                        while (endRapidBeats.length > 0 &&
-                               (totalSamplesProcessed - endRapidBeats[0]) > ctx.sampleRate * 1.5) {
-                            endRapidBeats.shift();
-                        }
-                        if (endRapidBeats.length >= 4) {
-                            const span4 = endRapidBeats[endRapidBeats.length - 1] - endRapidBeats[endRapidBeats.length - 4];
-                            if (span4 < ctx.sampleRate * 1.2) { // 4 beats within 1.2s
-                                log(consoleId, '');
-                                log(consoleId, '✓ Sinal de fim detectado!', 'log-warn');
-                                log(consoleId, `═══ RESULTADO: "${message}" (${charCount} chars) ═══`, 'log-info log-bold');
-                                stopReceive1();
-                                return;
-                            }
-                        }
-                    }
-                }
-                silenceSamples = 0;
-            } else {
-                inBeat = false;
-                silenceSamples += len;
-                samplesSinceLastBeat += len;
-
-                if (startDetected && bitWindowActive) {
-                    bitWindowSamples += len;
-
-                    // If enough silence has passed since the bit window started,
-                    // decode the bit based on beat count
-                    if (samplesSinceLastBeat > BIT_WINDOW_THRESH_SAMPLES) {
-                        const bit = bitBeats >= 2 ? 1 : 0;
-                        frameBits.push(bit);
-                        bitWindowActive = false;
-                        bitBeats = 0;
-                        bitWindowSamples = 0;
-                        endRapidBeats = []; // reset end detection since this was data
-
-                        if (frameBits.length === 9) {
-                            const { data, ok } = verifyParityFrame(frameBits);
-                            const ch = bitsToChar(data);
-                            charCount++;
-
-                            if (ok) {
-                                message += ch;
-                                log(consoleId, `  <span class="log-success">[SUCESSO]</span> Char #${charCount}: '${ch}' (ASCII ${ch.charCodeAt(0)}) Dados: [${formatBits(data)}] Paridade: <span class="log-warn">${frameBits[8]}</span> ✓`);
                             } else {
-                                message += '?';
-                                log(consoleId, `  <span class="log-error">[FALHA DE TRANSMISSÃO]</span> Char #${charCount}: Dados: [${formatBits(data)}] Paridade: <span class="log-error">${frameBits[8]}</span> ✗ Erro de paridade!`);
+                                bitBeats++;
                             }
-                            document.getElementById('rx1-decoded').textContent = message || '—';
-                            frameBits = [];
+                            // Also track for end signal
+                            endRapidBeats.push(totalSamplesProcessed);
+                            while (endRapidBeats.length > 0 &&
+                                (totalSamplesProcessed - endRapidBeats[0]) > ctx.sampleRate * 1.5) {
+                                endRapidBeats.shift();
+                            }
+                            if (endRapidBeats.length >= 4) {
+                                const span4 = endRapidBeats[endRapidBeats.length - 1] - endRapidBeats[endRapidBeats.length - 4];
+                                if (span4 < ctx.sampleRate * 1.2) { // 4 beats within 1.2s
+                                    log(consoleId, '');
+                                    log(consoleId, '✓ Sinal de fim detectado!', 'log-warn');
+                                    log(consoleId, `═══ RESULTADO: "${message}" (${charCount} chars) ═══`, 'log-info log-bold');
+                                    stopReceive1();
+                                    return;
+                                }
+                            }
                         }
                     }
-                }
+                    silenceSamples = 0;
+                } else {
+                    inBeat = false;
+                    silenceSamples += len;
+                    samplesSinceLastBeat += len;
 
-                // End by silence timeout
-                if (startDetected && !bitWindowActive && silenceSamples > END_SILENCE_SAMPLES && charCount > 0) {
-                    log(consoleId, '');
-                    log(consoleId, `═══ RESULTADO: "${message}" (${charCount} chars) ═══`, 'log-info log-bold');
-                    stopReceive1();
-                    return;
-                }
-            }
+                    if (startDetected && bitWindowActive) {
+                        bitWindowSamples += len;
 
-            totalSamplesProcessed += len;
-        };
+                        // If enough silence has passed since the bit window started,
+                        // decode the bit based on beat count
+                        if (samplesSinceLastBeat > BIT_WINDOW_THRESH_SAMPLES) {
+                            const bit = bitBeats >= 2 ? 1 : 0;
+                            frameBits.push(bit);
+                            bitWindowActive = false;
+                            bitBeats = 0;
+                            bitWindowSamples = 0;
+                            endRapidBeats = []; // reset end detection since this was data
 
-        // Visualization via requestAnimationFrame (separate from processing)
-        const visDataArray = new Float32Array(analyser.fftSize);
-        function drawWaveform() {
-            if (!rx1Active) return;
-            rx1AnimFrame = requestAnimationFrame(drawWaveform);
+                            if (frameBits.length === 9) {
+                                const { data, ok } = verifyParityFrame(frameBits);
+                                const ch = bitsToChar(data);
+                                charCount++;
 
-            analyser.getFloatTimeDomainData(visDataArray);
-            let sum = 0;
-            for (let i = 0; i < visDataArray.length; i++) sum += visDataArray[i] * visDataArray[i];
-            const rms = Math.sqrt(sum / visDataArray.length);
-
-            canvasCtx.fillStyle = '#0d1225';
-            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
-            canvasCtx.lineWidth = 2;
-            canvasCtx.strokeStyle = rms > CONFIG.BEAT_ENERGY_THRESHOLD ? '#10b981' : '#3b82f6';
-            canvasCtx.beginPath();
-            const sliceWidth = canvas.width / visDataArray.length;
-            let x = 0;
-            for (let i = 0; i < visDataArray.length; i++) {
-                const v = visDataArray[i];
-                const y = (v + 1) / 2 * canvas.height;
-                if (i === 0) canvasCtx.moveTo(x, y);
-                else canvasCtx.lineTo(x, y);
-                x += sliceWidth;
-            }
-            canvasCtx.stroke();
-
-            canvasCtx.strokeStyle = 'rgba(239,68,68,0.3)';
-            canvasCtx.setLineDash([5, 5]);
-            const thY = canvas.height / 2 - CONFIG.BEAT_ENERGY_THRESHOLD * canvas.height;
-            canvasCtx.beginPath();
-            canvasCtx.moveTo(0, thY);
-            canvasCtx.lineTo(canvas.width, thY);
-            canvasCtx.stroke();
-            canvasCtx.setLineDash([]);
-        }
-        drawWaveform();
-    }
-
-    window.stopReceive1 = function() {
-        rx1Active = false;
-        if (rx1AnimFrame) cancelAnimationFrame(rx1AnimFrame);
-        if (rx1Processor) { rx1Processor.disconnect(); rx1Processor = null; }
-        if (rx1Stream) { rx1Stream.getTracks().forEach(t => t.stop()); rx1Stream = null; }
-        document.getElementById('rx1-start').style.display = '';
-        document.getElementById('rx1-stop').style.display = 'none';
-        document.getElementById('rx1-status').textContent = '⏸';
-        document.getElementById('rx1-status').classList.remove('pulsing');
-    };
-
-    // ================================================================
-    // RECEIVER METHOD 2 (FSK) — v3
-    //
-    // Abordagem: acumula TODO o áudio após o preâmbulo em um buffer
-    // contínuo (Float32Array). Quando o sinal de fim é detectado ou
-    // ocorre silêncio prolongado, processa o buffer inteiro de uma vez
-    // com janelas de Goertzel alinhadas e centradas.
-    //
-    // Isso elimina problemas de sincronização em tempo real, já que o
-    // processamento é feito offline sobre os dados completos.
-    // ================================================================
-    let rx2Active = false;
-    let rx2Stream = null;
-    let rx2AnimFrame = null;
-    let rx2Processor = null;
-
-    // Goertzel: retorna magnitude para uma frequência alvo
-    function goertzelMag(samples, startIdx, length, targetFreq, sampleRate) {
-        const k = Math.round(length * targetFreq / sampleRate);
-        const omega = (2 * Math.PI * k) / length;
-        const coeff = 2 * Math.cos(omega);
-        let s1 = 0, s2 = 0;
-        for (let i = 0; i < length; i++) {
-            const s0 = samples[startIdx + i] + coeff * s1 - s2;
-            s2 = s1;
-            s1 = s0;
-        }
-        return Math.sqrt(s1 * s1 + s2 * s2 - coeff * s1 * s2) / length;
-    }
-
-    // Goertzel simples (array inteiro) para visualização
-    function goertzel(samples, targetFreq, sampleRate) {
-        return goertzelMag(samples, 0, samples.length, targetFreq, sampleRate);
-    }
-
-    window.startReceiveMethod2 = async function() {
-        if (rx2Active) return;
-        try {
-            rx2Stream = await navigator.mediaDevices.getUserMedia({ audio: { sampleRate: 44100 } });
-        } catch (e) {
-            log('rx2-log', '✗ Erro ao acessar microfone: ' + e.message, 'log-error');
-            return;
-        }
-
-        rx2Active = true;
-        document.getElementById('rx2-start').style.display = 'none';
-        document.getElementById('rx2-stop').style.display = '';
-        document.getElementById('rx2-status').textContent = '🔴';
-        document.getElementById('rx2-status').classList.add('pulsing');
-
-        const ctx = getAudioCtx();
-        const actualSR = ctx.sampleRate;
-        const source = ctx.createMediaStreamSource(rx2Stream);
-
-        // Analyser for visualization only
-        const analyser = ctx.createAnalyser();
-        analyser.fftSize = 4096;
-        source.connect(analyser);
-
-        const canvas = document.getElementById('rx2-canvas');
-        const canvasCtx = canvas.getContext('2d');
-        canvas.width = canvas.clientWidth * 2;
-        canvas.height = 200;
-
-        // ScriptProcessorNode — coleta amostras em tempo real
-        const PROC_BUFFER = 2048;
-        rx2Processor = ctx.createScriptProcessor(PROC_BUFFER, 1, 1);
-        source.connect(rx2Processor);
-        rx2Processor.connect(ctx.destination);
-
-        const SAMPLES_PER_BIT = Math.round(CONFIG.FSK_BIT_DURATION * actualSR);
-
-        // ---- Estados ----
-        const STATE_WAIT_PREAMBLE = 0;
-        const STATE_COLLECTING = 1;  // coletando tudo após preâmbulo
-        const STATE_DONE = 2;
-
-        let state = STATE_WAIT_PREAMBLE;
-        let preambleConfidence = 0;
-
-        // Buffer dinâmico para coletar todo o áudio de dados
-        // Pré-aloca para ~30s de áudio (expandirá se necessário)
-        let audioBuffer = new Float32Array(actualSR * 30);
-        let audioLen = 0;
-
-        // Janela de análise para preamble (~50ms)
-        const PRE_WIN = Math.round(0.05 * actualSR);
-        let preBuffer = new Float32Array(PRE_WIN);
-        let preBufPos = 0;
-
-        // Detecção de silêncio após dados
-        let silenceChunks = 0;
-        const SILENCE_THRESH = 0.003;
-        // Quantos chunks silenciosos para considerar fim (~500ms)
-        const SILENCE_CHUNKS_END = Math.ceil((0.5 * actualSR) / PROC_BUFFER);
-
-        const consoleId = 'rx2-log';
-
-        clearConsole(consoleId);
-        log(consoleId, '═══ RECEPÇÃO — MÉTODO 2 (FSK) ═══', 'log-info log-bold');
-        log(consoleId, `Sample rate: ${actualSR} Hz | Amostras/bit: ${SAMPLES_PER_BIT} | Duração/bit: ${CONFIG.FSK_BIT_DURATION * 1000}ms`, 'log-info');
-        log(consoleId, `Aguardando preâmbulo (${CONFIG.FSK_PREAMBLE_FREQ} Hz)...`, 'log-warn');
-
-        rx2Processor.onaudioprocess = function(e) {
-            if (!rx2Active || state === STATE_DONE) return;
-
-            const input = e.inputBuffer.getChannelData(0);
-            const len = input.length;
-
-            // RMS
-            let sum = 0;
-            for (let i = 0; i < len; i++) sum += input[i] * input[i];
-            const rms = Math.sqrt(sum / len);
-
-            if (state === STATE_WAIT_PREAMBLE) {
-                // Acumula no buffer de preâmbulo e analisa a cada janela
-                for (let i = 0; i < len; i++) {
-                    preBuffer[preBufPos++] = input[i];
-                    if (preBufPos >= PRE_WIN) {
-                        preBufPos = 0;
-                        const magPre = goertzelMag(preBuffer, 0, PRE_WIN, CONFIG.FSK_PREAMBLE_FREQ, actualSR);
-                        const mag0 = goertzelMag(preBuffer, 0, PRE_WIN, CONFIG.FSK_FREQ_0, actualSR);
-                        const mag1 = goertzelMag(preBuffer, 0, PRE_WIN, CONFIG.FSK_FREQ_1, actualSR);
-
-                        if (magPre > mag0 && magPre > mag1 && magPre > SILENCE_THRESH) {
-                            preambleConfidence++;
-                            if (preambleConfidence >= 3) {
-                                state = STATE_COLLECTING;
-                                audioLen = 0;
-                                silenceChunks = 0;
-                                log(consoleId, '✓ Preâmbulo detectado! Gravando stream contínuo...', 'log-success log-bold');
+                                if (ok) {
+                                    message += ch;
+                                    log(consoleId, `  <span class="log-success">[SUCESSO]</span> Char #${charCount}: '${ch}' (ASCII ${ch.charCodeAt(0)}) Dados: [${formatBits(data)}] Paridade: <span class="log-warn">${frameBits[8]}</span> ✓`);
+                                } else {
+                                    message += '?';
+                                    log(consoleId, `  <span class="log-error">[FALHA DE TRANSMISSÃO]</span> Char #${charCount}: Dados: [${formatBits(data)}] Paridade: <span class="log-error">${frameBits[8]}</span> ✗ Erro de paridade!`);
+                                }
+                                document.getElementById('rx1-decoded').textContent = message || '—';
+                                frameBits = [];
                             }
-                        } else {
-                            preambleConfidence = Math.max(0, preambleConfidence - 1);
                         }
                     }
-                }
-            } else if (state === STATE_COLLECTING) {
-                // Expandir buffer se necessário
-                if (audioLen + len > audioBuffer.length) {
-                    const newBuf = new Float32Array(audioBuffer.length * 2);
-                    newBuf.set(audioBuffer);
-                    audioBuffer = newBuf;
-                }
-                audioBuffer.set(input, audioLen);
-                audioLen += len;
 
-                // Detectar silêncio prolongado (fim da transmissão)
-                if (rms < SILENCE_THRESH) {
-                    silenceChunks++;
-                    if (silenceChunks >= SILENCE_CHUNKS_END && audioLen > SAMPLES_PER_BIT * 4) {
-                        // Fim por silêncio
-                        state = STATE_DONE;
-                        log(consoleId, `Silêncio detectado. Total de amostras coletadas: ${audioLen}`, 'log-info');
-                        processCollectedAudio(audioBuffer, audioLen, actualSR, SAMPLES_PER_BIT, consoleId);
-                        stopReceive2();
+                    // End by silence timeout
+                    if (startDetected && !bitWindowActive && silenceSamples > END_SILENCE_SAMPLES && charCount > 0) {
+                        log(consoleId, '');
+                        log(consoleId, `═══ RESULTADO: "${message}" (${charCount} chars) ═══`, 'log-info log-bold');
+                        stopReceive1();
                         return;
                     }
-                } else {
-                    // Verificar sinal de fim (3000 Hz)
-                    if (audioLen > SAMPLES_PER_BIT) {
-                        // Analisar os últimos SAMPLES_PER_BIT amostras para sinal de fim
-                        const checkStart = audioLen - SAMPLES_PER_BIT;
-                        const magEnd = goertzelMag(audioBuffer, checkStart, SAMPLES_PER_BIT, CONFIG.FSK_END_FREQ, actualSR);
-                        const mag0 = goertzelMag(audioBuffer, checkStart, SAMPLES_PER_BIT, CONFIG.FSK_FREQ_0, actualSR);
-                        const mag1 = goertzelMag(audioBuffer, checkStart, SAMPLES_PER_BIT, CONFIG.FSK_FREQ_1, actualSR);
-                        const magPre = goertzelMag(audioBuffer, checkStart, SAMPLES_PER_BIT, CONFIG.FSK_PREAMBLE_FREQ, actualSR);
+                }
 
-                        if (magEnd > mag0 && magEnd > mag1 && magEnd > magPre && magEnd > SILENCE_THRESH) {
+                totalSamplesProcessed += len;
+            };
+
+            // Visualization via requestAnimationFrame (separate from processing)
+            const visDataArray = new Float32Array(analyser.fftSize);
+            function drawWaveform() {
+                if (!rx1Active) return;
+                rx1AnimFrame = requestAnimationFrame(drawWaveform);
+
+                analyser.getFloatTimeDomainData(visDataArray);
+                let sum = 0;
+                for (let i = 0; i < visDataArray.length; i++) sum += visDataArray[i] * visDataArray[i];
+                const rms = Math.sqrt(sum / visDataArray.length);
+
+                canvasCtx.fillStyle = '#0d1225';
+                canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+                canvasCtx.lineWidth = 2;
+                canvasCtx.strokeStyle = rms > CONFIG.BEAT_ENERGY_THRESHOLD ? '#10b981' : '#3b82f6';
+                canvasCtx.beginPath();
+                const sliceWidth = canvas.width / visDataArray.length;
+                let x = 0;
+                for (let i = 0; i < visDataArray.length; i++) {
+                    const v = visDataArray[i];
+                    const y = (v + 1) / 2 * canvas.height;
+                    if (i === 0) canvasCtx.moveTo(x, y);
+                    else canvasCtx.lineTo(x, y);
+                    x += sliceWidth;
+                }
+                canvasCtx.stroke();
+
+                canvasCtx.strokeStyle = 'rgba(239,68,68,0.3)';
+                canvasCtx.setLineDash([5, 5]);
+                const thY = canvas.height / 2 - CONFIG.BEAT_ENERGY_THRESHOLD * canvas.height;
+                canvasCtx.beginPath();
+                canvasCtx.moveTo(0, thY);
+                canvasCtx.lineTo(canvas.width, thY);
+                canvasCtx.stroke();
+                canvasCtx.setLineDash([]);
+            }
+            drawWaveform();
+        }
+
+        window.stopReceive1 = function () {
+            rx1Active = false;
+            if (rx1AnimFrame) cancelAnimationFrame(rx1AnimFrame);
+            if (rx1Processor) { rx1Processor.disconnect(); rx1Processor = null; }
+            if (rx1Stream) { rx1Stream.getTracks().forEach(t => t.stop()); rx1Stream = null; }
+            document.getElementById('rx1-start').style.display = '';
+            document.getElementById('rx1-stop').style.display = 'none';
+            document.getElementById('rx1-status').textContent = '⏸';
+            document.getElementById('rx1-status').classList.remove('pulsing');
+        };
+
+        // ================================================================
+        // RECEIVER METHOD 2 (FSK) — v3
+        //
+        // Abordagem: acumula TODO o áudio após o preâmbulo em um buffer
+        // contínuo (Float32Array). Quando o sinal de fim é detectado ou
+        // ocorre silêncio prolongado, processa o buffer inteiro de uma vez
+        // com janelas de Goertzel alinhadas e centradas.
+        //
+        // Isso elimina problemas de sincronização em tempo real, já que o
+        // processamento é feito offline sobre os dados completos.
+        // ================================================================
+        let rx2Active = false;
+        let rx2Stream = null;
+        let rx2AnimFrame = null;
+        let rx2Processor = null;
+
+        // Goertzel: retorna magnitude para uma frequência alvo
+        function goertzelMag(samples, startIdx, length, targetFreq, sampleRate) {
+            const k = Math.round(length * targetFreq / sampleRate);
+            const omega = (2 * Math.PI * k) / length;
+            const coeff = 2 * Math.cos(omega);
+            let s1 = 0, s2 = 0;
+            for (let i = 0; i < length; i++) {
+                const s0 = samples[startIdx + i] + coeff * s1 - s2;
+                s2 = s1;
+                s1 = s0;
+            }
+            return Math.sqrt(s1 * s1 + s2 * s2 - coeff * s1 * s2) / length;
+        }
+
+        // Goertzel simples (array inteiro) para visualização
+        function goertzel(samples, targetFreq, sampleRate) {
+            return goertzelMag(samples, 0, samples.length, targetFreq, sampleRate);
+        }
+
+        window.startReceiveMethod2 = async function () {
+            if (rx2Active) return;
+            try {
+                rx2Stream = await navigator.mediaDevices.getUserMedia({ audio: { sampleRate: 44100 } });
+            } catch (e) {
+                log('rx2-log', '✗ Erro ao acessar microfone: ' + e.message, 'log-error');
+                return;
+            }
+
+            rx2Active = true;
+            document.getElementById('rx2-start').style.display = 'none';
+            document.getElementById('rx2-stop').style.display = '';
+            document.getElementById('rx2-status').textContent = '🔴';
+            document.getElementById('rx2-status').classList.add('pulsing');
+
+            const ctx = getAudioCtx();
+            const actualSR = ctx.sampleRate;
+            const source = ctx.createMediaStreamSource(rx2Stream);
+
+            // Analyser for visualization only
+            const analyser = ctx.createAnalyser();
+            analyser.fftSize = 4096;
+            source.connect(analyser);
+
+            const canvas = document.getElementById('rx2-canvas');
+            const canvasCtx = canvas.getContext('2d');
+            canvas.width = canvas.clientWidth * 2;
+            canvas.height = 200;
+
+            // ScriptProcessorNode — coleta amostras em tempo real
+            const PROC_BUFFER = 2048;
+            rx2Processor = ctx.createScriptProcessor(PROC_BUFFER, 1, 1);
+            source.connect(rx2Processor);
+            rx2Processor.connect(ctx.destination);
+
+            const SAMPLES_PER_BIT = Math.round(CONFIG.FSK_BIT_DURATION * actualSR);
+
+            // ---- Estados ----
+            const STATE_WAIT_PREAMBLE = 0;
+            const STATE_COLLECTING = 1;  // coletando tudo após preâmbulo
+            const STATE_DONE = 2;
+
+            let state = STATE_WAIT_PREAMBLE;
+            let preambleConfidence = 0;
+
+            // Buffer dinâmico para coletar todo o áudio de dados
+            // Pré-aloca para ~30s de áudio (expandirá se necessário)
+            let audioBuffer = new Float32Array(actualSR * 30);
+            let audioLen = 0;
+
+            // Janela de análise para preamble (~50ms)
+            const PRE_WIN = Math.round(0.05 * actualSR);
+            let preBuffer = new Float32Array(PRE_WIN);
+            let preBufPos = 0;
+
+            // Detecção de silêncio após dados
+            let silenceChunks = 0;
+            const SILENCE_THRESH = 0.003;
+            // Quantos chunks silenciosos para considerar fim (~500ms)
+            const SILENCE_CHUNKS_END = Math.ceil((0.5 * actualSR) / PROC_BUFFER);
+
+            const consoleId = 'rx2-log';
+
+            clearConsole(consoleId);
+            log(consoleId, '═══ RECEPÇÃO — MÉTODO 2 (FSK) ═══', 'log-info log-bold');
+            log(consoleId, `Sample rate: ${actualSR} Hz | Amostras/bit: ${SAMPLES_PER_BIT} | Duração/bit: ${CONFIG.FSK_BIT_DURATION * 1000}ms`, 'log-info');
+            log(consoleId, `Aguardando preâmbulo (${CONFIG.FSK_PREAMBLE_FREQ} Hz)...`, 'log-warn');
+
+            rx2Processor.onaudioprocess = function (e) {
+                if (!rx2Active || state === STATE_DONE) return;
+
+                const input = e.inputBuffer.getChannelData(0);
+                const len = input.length;
+
+                // RMS
+                let sum = 0;
+                for (let i = 0; i < len; i++) sum += input[i] * input[i];
+                const rms = Math.sqrt(sum / len);
+
+                if (state === STATE_WAIT_PREAMBLE) {
+                    // Acumula no buffer de preâmbulo e analisa a cada janela
+                    for (let i = 0; i < len; i++) {
+                        preBuffer[preBufPos++] = input[i];
+                        if (preBufPos >= PRE_WIN) {
+                            preBufPos = 0;
+                            const magPre = goertzelMag(preBuffer, 0, PRE_WIN, CONFIG.FSK_PREAMBLE_FREQ, actualSR);
+                            const mag0 = goertzelMag(preBuffer, 0, PRE_WIN, CONFIG.FSK_FREQ_0, actualSR);
+                            const mag1 = goertzelMag(preBuffer, 0, PRE_WIN, CONFIG.FSK_FREQ_1, actualSR);
+
+                            if (magPre > mag0 && magPre > mag1 && magPre > SILENCE_THRESH) {
+                                preambleConfidence++;
+                                if (preambleConfidence >= 3) {
+                                    state = STATE_COLLECTING;
+                                    audioLen = 0;
+                                    silenceChunks = 0;
+                                    log(consoleId, '✓ Preâmbulo detectado! Gravando stream contínuo...', 'log-success log-bold');
+                                }
+                            } else {
+                                preambleConfidence = Math.max(0, preambleConfidence - 1);
+                            }
+                        }
+                    }
+                } else if (state === STATE_COLLECTING) {
+                    // Expandir buffer se necessário
+                    if (audioLen + len > audioBuffer.length) {
+                        const newBuf = new Float32Array(audioBuffer.length * 2);
+                        newBuf.set(audioBuffer);
+                        audioBuffer = newBuf;
+                    }
+                    audioBuffer.set(input, audioLen);
+                    audioLen += len;
+
+                    // Detectar silêncio prolongado (fim da transmissão)
+                    if (rms < SILENCE_THRESH) {
+                        silenceChunks++;
+                        if (silenceChunks >= SILENCE_CHUNKS_END && audioLen > SAMPLES_PER_BIT * 4) {
+                            // Fim por silêncio
                             state = STATE_DONE;
-                            log(consoleId, `Sinal de fim detectado. Total de amostras coletadas: ${audioLen}`, 'log-info');
+                            log(consoleId, `Silêncio detectado. Total de amostras coletadas: ${audioLen}`, 'log-info');
                             processCollectedAudio(audioBuffer, audioLen, actualSR, SAMPLES_PER_BIT, consoleId);
                             stopReceive2();
                             return;
                         }
+                    } else {
+                        // Verificar sinal de fim (3000 Hz)
+                        if (audioLen > SAMPLES_PER_BIT) {
+                            // Analisar os últimos SAMPLES_PER_BIT amostras para sinal de fim
+                            const checkStart = audioLen - SAMPLES_PER_BIT;
+                            const magEnd = goertzelMag(audioBuffer, checkStart, SAMPLES_PER_BIT, CONFIG.FSK_END_FREQ, actualSR);
+                            const mag0 = goertzelMag(audioBuffer, checkStart, SAMPLES_PER_BIT, CONFIG.FSK_FREQ_0, actualSR);
+                            const mag1 = goertzelMag(audioBuffer, checkStart, SAMPLES_PER_BIT, CONFIG.FSK_FREQ_1, actualSR);
+                            const magPre = goertzelMag(audioBuffer, checkStart, SAMPLES_PER_BIT, CONFIG.FSK_PREAMBLE_FREQ, actualSR);
+
+                            if (magEnd > mag0 && magEnd > mag1 && magEnd > magPre && magEnd > SILENCE_THRESH) {
+                                state = STATE_DONE;
+                                log(consoleId, `Sinal de fim detectado. Total de amostras coletadas: ${audioLen}`, 'log-info');
+                                processCollectedAudio(audioBuffer, audioLen, actualSR, SAMPLES_PER_BIT, consoleId);
+                                stopReceive2();
+                                return;
+                            }
+                        }
+                        silenceChunks = 0;
                     }
-                    silenceChunks = 0;
                 }
+            };
+
+            // Visualization
+            function drawSpectrum() {
+                if (!rx2Active) return;
+                rx2AnimFrame = requestAnimationFrame(drawSpectrum);
+
+                const freqData = new Uint8Array(analyser.frequencyBinCount);
+                analyser.getByteFrequencyData(freqData);
+                canvasCtx.fillStyle = '#0d1225';
+                canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+                const binWidth = actualSR / analyser.fftSize;
+
+                canvasCtx.fillStyle = '#3b82f630';
+                const barW = canvas.width / (freqData.length * 0.15);
+                for (let i = 0; i < freqData.length * 0.15; i++) {
+                    const barH = (freqData[i] / 255) * canvas.height;
+                    canvasCtx.fillRect(i * barW, canvas.height - barH, barW - 1, barH);
+                }
+
+                // Highlight frequency bins
+                const highlights = [
+                    { freq: CONFIG.FSK_FREQ_0, color: '#06b6d480' },
+                    { freq: CONFIG.FSK_FREQ_1, color: '#f59e0b80' },
+                    { freq: CONFIG.FSK_PREAMBLE_FREQ, color: '#8b5cf680' },
+                    { freq: CONFIG.FSK_END_FREQ, color: '#ef444480' },
+                ];
+                for (const h of highlights) {
+                    const binIdx = Math.round(h.freq / binWidth);
+                    const xPos = binIdx * barW;
+                    canvasCtx.fillStyle = h.color;
+                    const barH = (freqData[binIdx] / 255) * canvas.height;
+                    canvasCtx.fillRect(xPos - 2, canvas.height - barH, barW + 4, barH);
+                }
+
+                // Detected frequency display
+                const visData = new Float32Array(analyser.fftSize);
+                analyser.getFloatTimeDomainData(visData);
+                const m0 = goertzel(visData, CONFIG.FSK_FREQ_0, actualSR);
+                const m1 = goertzel(visData, CONFIG.FSK_FREQ_1, actualSR);
+                const mP = goertzel(visData, CONFIG.FSK_PREAMBLE_FREQ, actualSR);
+                const mE = goertzel(visData, CONFIG.FSK_END_FREQ, actualSR);
+                const maxM = Math.max(m0, m1, mP, mE);
+                let detFreq = '—';
+                if (maxM > 0.003) {
+                    if (mP === maxM) detFreq = CONFIG.FSK_PREAMBLE_FREQ + ' Hz (Preâmbulo)';
+                    else if (m0 === maxM) detFreq = CONFIG.FSK_FREQ_0 + ' Hz (Bit 0)';
+                    else if (m1 === maxM) detFreq = CONFIG.FSK_FREQ_1 + ' Hz (Bit 1)';
+                    else if (mE === maxM) detFreq = CONFIG.FSK_END_FREQ + ' Hz (Fim)';
+                }
+                document.getElementById('rx2-freq').textContent = detFreq;
+            }
+            drawSpectrum();
+        }
+
+        // ================================================================
+        // PROCESSAMENTO OFFLINE DO ÁUDIO FSK COLETADO
+        //
+        // Em vez de decodificar bit a bit em tempo real (sujeito a jitter),
+        // analisamos o buffer inteiro de uma vez. Isso permite:
+        // 1. Encontrar o melhor alinhamento de bit por correlação
+        // 2. Usar janelas centradas para evitar artefatos de borda
+        // ================================================================
+        function processCollectedAudio(buffer, length, sampleRate, samplesPerBit, consoleId) {
+            if (length < samplesPerBit * 2) {
+                log(consoleId, '✗ Dados insuficientes para decodificar', 'log-error');
+                return;
+            }
+
+            log(consoleId, '');
+            log(consoleId, `Processando ${length} amostras (${(length / sampleRate * 1000).toFixed(0)} ms)...`, 'log-info');
+
+            // ---- Passo 1: Encontrar o início exato dos dados ----
+            // Procura a transição onde a energia do preâmbulo cai e a de dados sobe
+            // Como não há mais gap de silêncio, a transição é imediata.
+            const STEP = Math.round(samplesPerBit * 0.1); // passo de 10%
+            let bestStart = -1;
+
+            // Varrer o buffer até o primeiro bit de dados aparecer fortemente
+            for (let offset = 0; offset < length - samplesPerBit; offset += STEP) {
+                const magPre = goertzelMag(buffer, offset, samplesPerBit, CONFIG.FSK_PREAMBLE_FREQ, sampleRate);
+                const m0 = goertzelMag(buffer, offset, samplesPerBit, CONFIG.FSK_FREQ_0, sampleRate);
+                const m1 = goertzelMag(buffer, offset, samplesPerBit, CONFIG.FSK_FREQ_1, sampleRate);
+
+                // O início dos dados é quando f0 ou f1 superam o preâmbulo
+                if ((m0 > magPre || m1 > magPre) && Math.max(m0, m1) > 0.002) {
+                    bestStart = offset;
+                    break;
+                }
+            }
+
+            if (bestStart === -1) {
+                log(consoleId, '✗ Não foi possível encontrar o início dos dados após o preâmbulo', 'log-error');
+                return;
+            }
+
+            log(consoleId, `Início dos dados encontrado na amostra ${bestStart} (${(bestStart / sampleRate * 1000).toFixed(1)} ms)`, 'log-info');
+
+            // ---- Passo 2: Decodificar bits a partir desse ponto ----
+            // Com o clock ancorado exatamente na transição do preâmbulo, os bits 
+            // fluem continuamente. Lemos o centro de cada janela.
+            const allBits = [];
+            let pos = bestStart;
+            const margin = Math.round(samplesPerBit * 0.2); // Ignora bordas de 20%
+            const winLen = samplesPerBit - 2 * margin; // Analisa os 60% centrais
+
+            while (pos + samplesPerBit <= length) {
+                const m0 = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_FREQ_0, sampleRate);
+                const m1 = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_FREQ_1, sampleRate);
+                const magEnd = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_END_FREQ, sampleRate);
+
+                // Se o sinal de fim predomina fortemente, terminamos
+                if (magEnd > m0 * 1.5 && magEnd > m1 * 1.5 && magEnd > 0.002) {
+                    log(consoleId, 'Sinal de fim encontrado durante a decodificação.', 'log-info');
+                    break;
+                }
+
+                // Para evitar ler silêncio no fim do buffer, paramos se a energia geral for nula
+                if (Math.max(m0, m1) < 0.0005) {
+                    break;
+                }
+
+                // Incondicionalmente empurra 1 bit a cada intervalo
+                allBits.push(m1 > m0 ? 1 : 0);
+
+                pos += samplesPerBit;
+            }
+
+            log(consoleId, `Bits decodificados: ${allBits.length}`, 'log-info');
+
+            // ---- Passo 4: Decodificar bytes e verificar CRC ----
+            decodeFSKBits(allBits, consoleId);
+        }
+
+        function decodeFSKBits(allBits, consoleId) {
+            log(consoleId, '');
+            log(consoleId, `Total de bits recebidos: ${allBits.length}`, 'log-info');
+
+            if (allBits.length < 16) {
+                log(consoleId, `✗ Dados insuficientes: ${allBits.length} bits (mínimo 16)`, 'log-error');
+                return;
+            }
+
+            // Os dados são: N bytes de dados + 1 byte CRC = (N+1)*8 bits
+            // Precisamos que allBits.length seja múltiplo de 8
+            // Se não for, trim os bits extras (ruído no final)
+            const totalBits = allBits.length;
+            const usableBits = Math.floor(totalBits / 8) * 8;
+            if (usableBits < 16) {
+                log(consoleId, `✗ Dados insuficientes após alinhamento: ${usableBits} bits`, 'log-error');
+                return;
+            }
+
+            const alignedBits = allBits.slice(0, usableBits);
+            const dataBits = alignedBits.slice(0, -8);
+            const crcBits = alignedBits.slice(-8);
+
+            const dataBytes = [];
+            for (let i = 0; i + 8 <= dataBits.length; i += 8) {
+                dataBytes.push(bitsToByte(dataBits.slice(i, i + 8)));
+            }
+
+            const recvCRC = bitsToByte(crcBits);
+            const calcCRC = calculateCRC8(dataBytes);
+            const ok = recvCRC === calcCRC;
+
+            let msg = '';
+            for (const b of dataBytes) {
+                const ch = b >= 32 && b < 127 ? String.fromCharCode(b) : '?';
+                msg += ch;
+                log(consoleId, `  Byte: '${ch}' (0x${b.toString(16).toUpperCase().padStart(2, '0')}) ← [${formatBits(byteToBits(b))}]`, 'log-success');
+            }
+
+            log(consoleId, '');
+            log(consoleId, `CRC-8 recebido:  0x${recvCRC.toString(16).toUpperCase().padStart(2, '0')}`, 'log-warn');
+            log(consoleId, `CRC-8 calculado: 0x${calcCRC.toString(16).toUpperCase().padStart(2, '0')}`, 'log-warn');
+
+            if (ok) {
+                log(consoleId, '');
+                log(consoleId, `✓ SUCESSO — DADOS ÍNTEGROS (CRC-8 VÁLIDO) | Mensagem: "${msg}"`, 'log-success log-bold');
+                document.getElementById('rx2-crc-status').textContent = '✓ OK';
+            } else {
+                log(consoleId, '');
+                log(consoleId, `✗ FALHA DE TRANSMISSÃO — CRC-8 INVÁLIDO | Mensagem: "${msg}"`, 'log-error log-bold');
+                document.getElementById('rx2-crc-status').textContent = '✗ ERRO';
+            }
+
+            document.getElementById('rx2-decoded').textContent = msg;
+        }
+
+        window.stopReceive2 = function () {
+            rx2Active = false;
+            if (rx2AnimFrame) cancelAnimationFrame(rx2AnimFrame);
+            if (rx2Processor) { rx2Processor.disconnect(); rx2Processor = null; }
+            if (rx2Stream) { rx2Stream.getTracks().forEach(t => t.stop()); rx2Stream = null; }
+            document.getElementById('rx2-start').style.display = '';
+            document.getElementById('rx2-stop').style.display = 'none';
+            document.getElementById('rx2-status').textContent = '⏸';
+            document.getElementById('rx2-status').classList.remove('pulsing');
+        };
+
+        // ================================================================
+        // DEMO PARITY
+        // ================================================================
+        window.demoParity = function () {
+            try {
+                const input = document.getElementById('parity-input').value.trim();
+                if (!input) { alert('Digite algo no campo de texto!'); return; }
+
+                const tbody = document.querySelector('#parity-table-ok tbody');
+                tbody.innerHTML = '';
+
+                for (let ci = 0; ci < input.length; ci++) {
+                    const char = input[ci];
+                    const bits = charToBits(char);
+                    const frame = buildParityFrame(bits);
+                    const ones = bits.reduce(function (s, b) { return s + b; }, 0);
+                    const result = verifyParityFrame(frame);
+
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = '<td>' + char + '</td>' +
+                        '<td>' + char.charCodeAt(0) + '</td>' +
+                        '<td class="bit-display">' + formatBits(bits) + '</td>' +
+                        '<td>' + ones + ' (' + (ones % 2 === 0 ? 'par' : 'impar') + ')</td>' +
+                        '<td><span class="bit-1">' + frame[8] + '</span></td>' +
+                        '<td class="bit-display">' + formatBits(frame) + '</td>' +
+                        '<td><span class="status-badge status-success">✓ SUCESSO</span></td>';
+                    tbody.appendChild(tr);
+                }
+            } catch (e) {
+                console.error('demoParity error:', e);
+                alert('Erro na demo: ' + e.message);
             }
         };
 
-        // Visualization
-        function drawSpectrum() {
-            if (!rx2Active) return;
-            rx2AnimFrame = requestAnimationFrame(drawSpectrum);
+        window.demoParityCorrupt = function () {
+            try {
+                const input = document.getElementById('parity-input').value.trim();
+                if (!input) { alert('Digite algo no campo de texto!'); return; }
+                window.demoParity();
 
-            const freqData = new Uint8Array(analyser.frequencyBinCount);
-            analyser.getByteFrequencyData(freqData);
-            canvasCtx.fillStyle = '#0d1225';
-            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+                document.getElementById('parity-corrupt-card').style.display = 'block';
+                const tbody = document.querySelector('#parity-table-corrupt tbody');
+                tbody.innerHTML = '';
 
-            const binWidth = actualSR / analyser.fftSize;
+                for (let ci = 0; ci < input.length; ci++) {
+                    var char = input[ci];
+                    var bits = charToBits(char);
+                    var frame = buildParityFrame(bits);
+                    var corruptPos = Math.floor(Math.random() * 8);
+                    var corrupted = frame.slice();
+                    corrupted[corruptPos] = 1 - corrupted[corruptPos];
+                    var result = verifyParityFrame(corrupted);
 
-            canvasCtx.fillStyle = '#3b82f630';
-            const barW = canvas.width / (freqData.length * 0.15);
-            for (let i = 0; i < freqData.length * 0.15; i++) {
-                const barH = (freqData[i] / 255) * canvas.height;
-                canvasCtx.fillRect(i * barW, canvas.height - barH, barW - 1, barH);
+                    var origHtml = '';
+                    for (var j = 0; j < 8; j++) {
+                        origHtml += '<span class="' + (frame[j] ? 'bit-1' : 'bit-0') + '">' + frame[j] + '</span>';
+                    }
+                    var corrHtml = '';
+                    for (var j = 0; j < 8; j++) {
+                        if (j === corruptPos) {
+                            corrHtml += '<span class="bit-corrupted">' + corrupted[j] + '</span>';
+                        } else {
+                            corrHtml += '<span class="' + (corrupted[j] ? 'bit-1' : 'bit-0') + '">' + corrupted[j] + '</span>';
+                        }
+                    }
+
+                    var tr = document.createElement('tr');
+                    tr.innerHTML = '<td>' + char + '</td>' +
+                        '<td class="bit-display">' + origHtml + ' <span class="bit-1">' + frame[8] + '</span></td>' +
+                        '<td class="bit-display">' + corrHtml + ' <span class="bit-1">' + corrupted[8] + '</span></td>' +
+                        '<td>Bit ' + corruptPos + '</td>' +
+                        '<td><span class="status-badge status-error">✗ FALHA DE TRANSMISSÃO</span></td>';
+                    tbody.appendChild(tr);
+                }
+            } catch (e) {
+                console.error('demoParityCorrupt error:', e);
+                alert('Erro na demo: ' + e.message);
             }
+        };
 
-            // Highlight frequency bins
-            const highlights = [
-                { freq: CONFIG.FSK_FREQ_0, color: '#06b6d480' },
-                { freq: CONFIG.FSK_FREQ_1, color: '#f59e0b80' },
-                { freq: CONFIG.FSK_PREAMBLE_FREQ, color: '#8b5cf680' },
-                { freq: CONFIG.FSK_END_FREQ, color: '#ef444480' },
-            ];
-            for (const h of highlights) {
-                const binIdx = Math.round(h.freq / binWidth);
-                const xPos = binIdx * barW;
-                canvasCtx.fillStyle = h.color;
-                const barH = (freqData[binIdx] / 255) * canvas.height;
-                canvasCtx.fillRect(xPos - 2, canvas.height - barH, barW + 4, barH);
+        // ================================================================
+        // DEMO CRC-8
+        // ================================================================
+        window.demoCRC = function () {
+            try {
+                const input = document.getElementById('crc-input').value.trim();
+                if (!input) { alert('Digite algo no campo de texto!'); return; }
+                const messages = input.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+
+                const tbody = document.querySelector('#crc-table-ok tbody');
+                tbody.innerHTML = '';
+
+                for (var mi = 0; mi < messages.length; mi++) {
+                    var msg = messages[mi];
+                    var bytes = strToBytes(msg);
+                    var crc = calculateCRC8(bytes);
+                    var hex = bytes.map(function (b) { return b.toString(16).toUpperCase().padStart(2, '0'); }).join(' ');
+
+                    var tr = document.createElement('tr');
+                    tr.innerHTML = '<td>"' + msg + '"</td>' +
+                        '<td>' + hex + '</td>' +
+                        '<td>0x' + crc.toString(16).toUpperCase().padStart(2, '0') + '</td>' +
+                        '<td class="bit-display">' + formatBits(byteToBits(crc)) + '</td>' +
+                        '<td><span class="status-badge status-success">✓ SUCESSO</span></td>';
+                    tbody.appendChild(tr);
+                }
+            } catch (e) {
+                console.error('demoCRC error:', e);
+                alert('Erro na demo: ' + e.message);
             }
+        };
 
-            // Detected frequency display
-            const visData = new Float32Array(analyser.fftSize);
-            analyser.getFloatTimeDomainData(visData);
-            const m0 = goertzel(visData, CONFIG.FSK_FREQ_0, actualSR);
-            const m1 = goertzel(visData, CONFIG.FSK_FREQ_1, actualSR);
-            const mP = goertzel(visData, CONFIG.FSK_PREAMBLE_FREQ, actualSR);
-            const mE = goertzel(visData, CONFIG.FSK_END_FREQ, actualSR);
-            const maxM = Math.max(m0, m1, mP, mE);
-            let detFreq = '—';
-            if (maxM > 0.003) {
-                if (mP === maxM) detFreq = CONFIG.FSK_PREAMBLE_FREQ + ' Hz (Preâmbulo)';
-                else if (m0 === maxM) detFreq = CONFIG.FSK_FREQ_0 + ' Hz (Bit 0)';
-                else if (m1 === maxM) detFreq = CONFIG.FSK_FREQ_1 + ' Hz (Bit 1)';
-                else if (mE === maxM) detFreq = CONFIG.FSK_END_FREQ + ' Hz (Fim)';
+        window.demoCRCCorrupt = function () {
+            try {
+                const input = document.getElementById('crc-input').value.trim();
+                if (!input) { alert('Digite algo no campo de texto!'); return; }
+                const messages = input.split(',').map(function (s) { return s.trim(); }).filter(Boolean);
+                window.demoCRC();
+
+                document.getElementById('crc-corrupt-card').style.display = 'block';
+                const tbody = document.querySelector('#crc-table-corrupt tbody');
+                tbody.innerHTML = '';
+
+                for (var mi = 0; mi < messages.length; mi++) {
+                    var msg = messages[mi];
+                    var bytes = strToBytes(msg);
+                    var origCRC = calculateCRC8(bytes);
+                    var origHex = bytes.map(function (b) { return b.toString(16).toUpperCase().padStart(2, '0'); }).join(' ');
+
+                    var corrupted = bytes.slice();
+                    var pos = Math.floor(Math.random() * corrupted.length);
+                    corrupted[pos] ^= (Math.floor(Math.random() * 255) + 1);
+                    var corrHex = '';
+                    for (var bi = 0; bi < corrupted.length; bi++) {
+                        var hexVal = corrupted[bi].toString(16).toUpperCase().padStart(2, '0');
+                        if (bi === pos) {
+                            corrHex += '<span class="bit-corrupted">' + hexVal + '</span>';
+                        } else {
+                            corrHex += hexVal;
+                        }
+                        if (bi < corrupted.length - 1) corrHex += ' ';
+                    }
+
+                    var recalcCRC = calculateCRC8(corrupted);
+
+                    var tr = document.createElement('tr');
+                    tr.innerHTML = '<td>"' + msg + '"</td>' +
+                        '<td>' + origHex + '</td>' +
+                        '<td>' + corrHex + '</td>' +
+                        '<td>0x' + origCRC.toString(16).toUpperCase().padStart(2, '0') + '</td>' +
+                        '<td><span style="color:var(--accent-red)">0x' + recalcCRC.toString(16).toUpperCase().padStart(2, '0') + '</span></td>' +
+                        '<td><span class="status-badge status-error">✗ FALHA — CRC NAO CONFERE</span></td>';
+                    tbody.appendChild(tr);
+                }
+            } catch (e) {
+                console.error('demoCRCCorrupt error:', e);
+                alert('Erro na demo: ' + e.message);
             }
-            document.getElementById('rx2-freq').textContent = detFreq;
-        }
-        drawSpectrum();
-    }
+        };
 
-    // ================================================================
-    // PROCESSAMENTO OFFLINE DO ÁUDIO FSK COLETADO
-    //
-    // Em vez de decodificar bit a bit em tempo real (sujeito a jitter),
-    // analisamos o buffer inteiro de uma vez. Isso permite:
-    // 1. Encontrar o melhor alinhamento de bit por correlação
-    // 2. Usar janelas centradas para evitar artefatos de borda
-    // ================================================================
-    function processCollectedAudio(buffer, length, sampleRate, samplesPerBit, consoleId) {
-        if (length < samplesPerBit * 2) {
-            log(consoleId, '✗ Dados insuficientes para decodificar', 'log-error');
-            return;
-        }
-
-        log(consoleId, '');
-        log(consoleId, `Processando ${length} amostras (${(length / sampleRate * 1000).toFixed(0)} ms)...`, 'log-info');
-
-        // ---- Passo 1: Encontrar o início real dos dados ----
-        // Procura a primeira janela com energia significativa de dados (f0 ou f1)
-        const STEP = Math.round(samplesPerBit * 0.1); // passo de 10% de um bit
-        let bestStart = 0;
-        let bestEnergy = 0;
-
-        // Varrer os primeiros 2 bits para encontrar onde os dados começam
-        const searchEnd = Math.min(samplesPerBit * 2, length - samplesPerBit);
-        for (let offset = 0; offset < searchEnd; offset += STEP) {
-            const m0 = goertzelMag(buffer, offset, samplesPerBit, CONFIG.FSK_FREQ_0, sampleRate);
-            const m1 = goertzelMag(buffer, offset, samplesPerBit, CONFIG.FSK_FREQ_1, sampleRate);
-            const energy = Math.max(m0, m1);
-            if (energy > bestEnergy) {
-                bestEnergy = energy;
-                bestStart = offset;
-            }
-        }
-
-        log(consoleId, `Início dos dados encontrado na amostra ${bestStart} (${(bestStart / sampleRate * 1000).toFixed(1)} ms)`, 'log-info');
-
-        // ---- Passo 1: Encontrar o início exato dos dados ----
-        // Procura a transição onde a energia do preâmbulo cai e a de dados sobe
-        // Como não há mais gap de silêncio, a transição é imediata.
-        const STEP = Math.round(samplesPerBit * 0.1); // passo de 10%
-        let bestStart = -1;
-
-        // Varrer o buffer até o primeiro bit de dados aparecer fortemente
-        for (let offset = 0; offset < length - samplesPerBit; offset += STEP) {
-            const magPre = goertzelMag(buffer, offset, samplesPerBit, CONFIG.FSK_PREAMBLE_FREQ, sampleRate);
-            const m0 = goertzelMag(buffer, offset, samplesPerBit, CONFIG.FSK_FREQ_0, sampleRate);
-            const m1 = goertzelMag(buffer, offset, samplesPerBit, CONFIG.FSK_FREQ_1, sampleRate);
-            
-            // O início dos dados é quando f0 ou f1 superam o preâmbulo
-            if ((m0 > magPre || m1 > magPre) && Math.max(m0, m1) > 0.002) {
-                bestStart = offset;
-                break;
-            }
-        }
-
-        if (bestStart === -1) {
-            log(consoleId, '✗ Não foi possível encontrar o início dos dados após o preâmbulo', 'log-error');
-            return;
-        }
-
-        log(consoleId, `Início dos dados encontrado na amostra ${bestStart} (${(bestStart / sampleRate * 1000).toFixed(1)} ms)`, 'log-info');
-
-        // ---- Passo 2: Decodificar bits a partir desse ponto ----
-        // Com o clock ancorado exatamente na transição do preâmbulo, os bits 
-        // fluem continuamente. Lemos o centro de cada janela.
-        const allBits = [];
-        let pos = bestStart;
-        const margin = Math.round(samplesPerBit * 0.2); // Ignora bordas de 20%
-        const winLen = samplesPerBit - 2 * margin; // Analisa os 60% centrais
-
-        while (pos + samplesPerBit <= length) {
-            const m0 = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_FREQ_0, sampleRate);
-            const m1 = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_FREQ_1, sampleRate);
-            const magEnd = goertzelMag(buffer, pos + margin, winLen, CONFIG.FSK_END_FREQ, sampleRate);
-
-            // Se o sinal de fim predomina fortemente, terminamos
-            if (magEnd > m0 * 1.5 && magEnd > m1 * 1.5 && magEnd > 0.002) {
-                log(consoleId, 'Sinal de fim encontrado durante a decodificação.', 'log-info');
-                break;
-            }
-
-            // Para evitar ler silêncio no fim do buffer, paramos se a energia geral for nula
-            if (Math.max(m0, m1) < 0.0005) {
-                break;
-            }
-
-            // Incondicionalmente empurra 1 bit a cada intervalo
-            allBits.push(m1 > m0 ? 1 : 0);
-            
-            pos += samplesPerBit;
-        }
-
-        log(consoleId, `Bits decodificados: ${allBits.length}`, 'log-info');
-
-        // ---- Passo 4: Decodificar bytes e verificar CRC ----
-        decodeFSKBits(allBits, consoleId);
-    }
-
-    function decodeFSKBits(allBits, consoleId) {
-        log(consoleId, '');
-        log(consoleId, `Total de bits recebidos: ${allBits.length}`, 'log-info');
-
-        if (allBits.length < 16) {
-            log(consoleId, `✗ Dados insuficientes: ${allBits.length} bits (mínimo 16)`, 'log-error');
-            return;
-        }
-
-        // Os dados são: N bytes de dados + 1 byte CRC = (N+1)*8 bits
-        // Precisamos que allBits.length seja múltiplo de 8
-        // Se não for, trim os bits extras (ruído no final)
-        const totalBits = allBits.length;
-        const usableBits = Math.floor(totalBits / 8) * 8;
-        if (usableBits < 16) {
-            log(consoleId, `✗ Dados insuficientes após alinhamento: ${usableBits} bits`, 'log-error');
-            return;
-        }
-
-        const alignedBits = allBits.slice(0, usableBits);
-        const dataBits = alignedBits.slice(0, -8);
-        const crcBits = alignedBits.slice(-8);
-
-        const dataBytes = [];
-        for (let i = 0; i + 8 <= dataBits.length; i += 8) {
-            dataBytes.push(bitsToByte(dataBits.slice(i, i + 8)));
-        }
-
-        const recvCRC = bitsToByte(crcBits);
-        const calcCRC = calculateCRC8(dataBytes);
-        const ok = recvCRC === calcCRC;
-
-        let msg = '';
-        for (const b of dataBytes) {
-            const ch = b >= 32 && b < 127 ? String.fromCharCode(b) : '?';
-            msg += ch;
-            log(consoleId, `  Byte: '${ch}' (0x${b.toString(16).toUpperCase().padStart(2,'0')}) ← [${formatBits(byteToBits(b))}]`, 'log-success');
-        }
-
-        log(consoleId, '');
-        log(consoleId, `CRC-8 recebido:  0x${recvCRC.toString(16).toUpperCase().padStart(2,'0')}`, 'log-warn');
-        log(consoleId, `CRC-8 calculado: 0x${calcCRC.toString(16).toUpperCase().padStart(2,'0')}`, 'log-warn');
-
-        if (ok) {
-            log(consoleId, '');
-            log(consoleId, `✓ SUCESSO — DADOS ÍNTEGROS (CRC-8 VÁLIDO) | Mensagem: "${msg}"`, 'log-success log-bold');
-            document.getElementById('rx2-crc-status').textContent = '✓ OK';
+        // Auto-run demos on page load
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', function () {
+                window.demoParity();
+                window.demoCRC();
+            });
         } else {
-            log(consoleId, '');
-            log(consoleId, `✗ FALHA DE TRANSMISSÃO — CRC-8 INVÁLIDO | Mensagem: "${msg}"`, 'log-error log-bold');
-            document.getElementById('rx2-crc-status').textContent = '✗ ERRO';
-        }
-
-        document.getElementById('rx2-decoded').textContent = msg;
-    }
-
-    window.stopReceive2 = function() {
-        rx2Active = false;
-        if (rx2AnimFrame) cancelAnimationFrame(rx2AnimFrame);
-        if (rx2Processor) { rx2Processor.disconnect(); rx2Processor = null; }
-        if (rx2Stream) { rx2Stream.getTracks().forEach(t => t.stop()); rx2Stream = null; }
-        document.getElementById('rx2-start').style.display = '';
-        document.getElementById('rx2-stop').style.display = 'none';
-        document.getElementById('rx2-status').textContent = '⏸';
-        document.getElementById('rx2-status').classList.remove('pulsing');
-    };
-
-    // ================================================================
-    // DEMO PARITY
-    // ================================================================
-    window.demoParity = function() {
-        try {
-            const input = document.getElementById('parity-input').value.trim();
-            if (!input) { alert('Digite algo no campo de texto!'); return; }
-
-            const tbody = document.querySelector('#parity-table-ok tbody');
-            tbody.innerHTML = '';
-
-            for (let ci = 0; ci < input.length; ci++) {
-                const char = input[ci];
-                const bits = charToBits(char);
-                const frame = buildParityFrame(bits);
-                const ones = bits.reduce(function(s, b) { return s + b; }, 0);
-                const result = verifyParityFrame(frame);
-
-                const tr = document.createElement('tr');
-                tr.innerHTML = '<td>' + char + '</td>' +
-                    '<td>' + char.charCodeAt(0) + '</td>' +
-                    '<td class="bit-display">' + formatBits(bits) + '</td>' +
-                    '<td>' + ones + ' (' + (ones % 2 === 0 ? 'par' : 'impar') + ')</td>' +
-                    '<td><span class="bit-1">' + frame[8] + '</span></td>' +
-                    '<td class="bit-display">' + formatBits(frame) + '</td>' +
-                    '<td><span class="status-badge status-success">✓ SUCESSO</span></td>';
-                tbody.appendChild(tr);
-            }
-        } catch (e) {
-            console.error('demoParity error:', e);
-            alert('Erro na demo: ' + e.message);
-        }
-    };
-
-    window.demoParityCorrupt = function() {
-        try {
-            const input = document.getElementById('parity-input').value.trim();
-            if (!input) { alert('Digite algo no campo de texto!'); return; }
-            window.demoParity();
-
-            document.getElementById('parity-corrupt-card').style.display = 'block';
-            const tbody = document.querySelector('#parity-table-corrupt tbody');
-            tbody.innerHTML = '';
-
-            for (let ci = 0; ci < input.length; ci++) {
-                var char = input[ci];
-                var bits = charToBits(char);
-                var frame = buildParityFrame(bits);
-                var corruptPos = Math.floor(Math.random() * 8);
-                var corrupted = frame.slice();
-                corrupted[corruptPos] = 1 - corrupted[corruptPos];
-                var result = verifyParityFrame(corrupted);
-
-                var origHtml = '';
-                for (var j = 0; j < 8; j++) {
-                    origHtml += '<span class="' + (frame[j] ? 'bit-1' : 'bit-0') + '">' + frame[j] + '</span>';
-                }
-                var corrHtml = '';
-                for (var j = 0; j < 8; j++) {
-                    if (j === corruptPos) {
-                        corrHtml += '<span class="bit-corrupted">' + corrupted[j] + '</span>';
-                    } else {
-                        corrHtml += '<span class="' + (corrupted[j] ? 'bit-1' : 'bit-0') + '">' + corrupted[j] + '</span>';
-                    }
-                }
-
-                var tr = document.createElement('tr');
-                tr.innerHTML = '<td>' + char + '</td>' +
-                    '<td class="bit-display">' + origHtml + ' <span class="bit-1">' + frame[8] + '</span></td>' +
-                    '<td class="bit-display">' + corrHtml + ' <span class="bit-1">' + corrupted[8] + '</span></td>' +
-                    '<td>Bit ' + corruptPos + '</td>' +
-                    '<td><span class="status-badge status-error">✗ FALHA DE TRANSMISSÃO</span></td>';
-                tbody.appendChild(tr);
-            }
-        } catch (e) {
-            console.error('demoParityCorrupt error:', e);
-            alert('Erro na demo: ' + e.message);
-        }
-    };
-
-    // ================================================================
-    // DEMO CRC-8
-    // ================================================================
-    window.demoCRC = function() {
-        try {
-            const input = document.getElementById('crc-input').value.trim();
-            if (!input) { alert('Digite algo no campo de texto!'); return; }
-            const messages = input.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
-
-            const tbody = document.querySelector('#crc-table-ok tbody');
-            tbody.innerHTML = '';
-
-            for (var mi = 0; mi < messages.length; mi++) {
-                var msg = messages[mi];
-                var bytes = strToBytes(msg);
-                var crc = calculateCRC8(bytes);
-                var hex = bytes.map(function(b) { return b.toString(16).toUpperCase().padStart(2, '0'); }).join(' ');
-
-                var tr = document.createElement('tr');
-                tr.innerHTML = '<td>"' + msg + '"</td>' +
-                    '<td>' + hex + '</td>' +
-                    '<td>0x' + crc.toString(16).toUpperCase().padStart(2,'0') + '</td>' +
-                    '<td class="bit-display">' + formatBits(byteToBits(crc)) + '</td>' +
-                    '<td><span class="status-badge status-success">✓ SUCESSO</span></td>';
-                tbody.appendChild(tr);
-            }
-        } catch (e) {
-            console.error('demoCRC error:', e);
-            alert('Erro na demo: ' + e.message);
-        }
-    };
-
-    window.demoCRCCorrupt = function() {
-        try {
-            const input = document.getElementById('crc-input').value.trim();
-            if (!input) { alert('Digite algo no campo de texto!'); return; }
-            const messages = input.split(',').map(function(s) { return s.trim(); }).filter(Boolean);
-            window.demoCRC();
-
-            document.getElementById('crc-corrupt-card').style.display = 'block';
-            const tbody = document.querySelector('#crc-table-corrupt tbody');
-            tbody.innerHTML = '';
-
-            for (var mi = 0; mi < messages.length; mi++) {
-                var msg = messages[mi];
-                var bytes = strToBytes(msg);
-                var origCRC = calculateCRC8(bytes);
-                var origHex = bytes.map(function(b) { return b.toString(16).toUpperCase().padStart(2,'0'); }).join(' ');
-
-                var corrupted = bytes.slice();
-                var pos = Math.floor(Math.random() * corrupted.length);
-                corrupted[pos] ^= (Math.floor(Math.random() * 255) + 1);
-                var corrHex = '';
-                for (var bi = 0; bi < corrupted.length; bi++) {
-                    var hexVal = corrupted[bi].toString(16).toUpperCase().padStart(2,'0');
-                    if (bi === pos) {
-                        corrHex += '<span class="bit-corrupted">' + hexVal + '</span>';
-                    } else {
-                        corrHex += hexVal;
-                    }
-                    if (bi < corrupted.length - 1) corrHex += ' ';
-                }
-
-                var recalcCRC = calculateCRC8(corrupted);
-
-                var tr = document.createElement('tr');
-                tr.innerHTML = '<td>"' + msg + '"</td>' +
-                    '<td>' + origHex + '</td>' +
-                    '<td>' + corrHex + '</td>' +
-                    '<td>0x' + origCRC.toString(16).toUpperCase().padStart(2,'0') + '</td>' +
-                    '<td><span style="color:var(--accent-red)">0x' + recalcCRC.toString(16).toUpperCase().padStart(2,'0') + '</span></td>' +
-                    '<td><span class="status-badge status-error">✗ FALHA — CRC NAO CONFERE</span></td>';
-                tbody.appendChild(tr);
-            }
-        } catch (e) {
-            console.error('demoCRCCorrupt error:', e);
-            alert('Erro na demo: ' + e.message);
-        }
-    };
-
-    // Auto-run demos on page load
-    if (document.readyState === 'loading') {
-        document.addEventListener('DOMContentLoaded', function() {
+            // DOM already loaded
             window.demoParity();
             window.demoCRC();
-        });
-    } else {
-        // DOM already loaded
-        window.demoParity();
-        window.demoCRC();
-    }
+        }
     </script>
 </body>
+
 </html>
