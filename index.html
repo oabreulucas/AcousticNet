@@ -1295,7 +1295,7 @@
         const CONFIG = {
             SAMPLE_RATE: 44100,
             BEAT_DURATION: 0.08,
-            BEAT_SILENCE: 0.25,
+            BEAT_SILENCE: 0.15,
             BIT_INTERVAL: 0.7,
             BEAT_FREQUENCY: 800,
             BEAT_AMPLITUDE: 0.9,
@@ -1692,8 +1692,8 @@
             const RAPID_BEAT_WINDOW_SAMPLES = Math.round(0.35 * ctx.sampleRate);
             // Silence threshold to consider transmission ended (3 seconds)
             const END_SILENCE_SAMPLES = Math.round(3.0 * ctx.sampleRate);
-            // Threshold for beat end gap detection (~60% of BIT_INTERVAL)
-            const BIT_WINDOW_THRESH_SAMPLES = Math.round(BIT_INTERVAL_SAMPLES * 0.6);
+            // Threshold for beat end gap detection (~50% of BIT_INTERVAL)
+            const BIT_WINDOW_THRESH_SAMPLES = Math.round(BIT_INTERVAL_SAMPLES * 0.5);
 
             let totalSamplesProcessed = 0;
             let lastBeatSample = -999999;
@@ -1765,7 +1765,7 @@
                             }
                             if (endRapidBeats.length >= 4) {
                                 const span4 = endRapidBeats[endRapidBeats.length - 1] - endRapidBeats[endRapidBeats.length - 4];
-                                if (span4 < ctx.sampleRate * 1.2) { // 4 beats within 1.2s
+                                if (span4 < ctx.sampleRate * 0.85) { // 4 beats within 850ms
                                     log(consoleId, '');
                                     log(consoleId, '✓ Sinal de fim detectado!', 'log-warn');
                                     log(consoleId, `═══ RESULTADO: "${message}" (${charCount} chars) ═══`, 'log-info log-bold');
