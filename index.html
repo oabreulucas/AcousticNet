@@ -1440,7 +1440,7 @@
             const totalBits = msg.length * 9;
             document.getElementById('tx1-chars').textContent = msg.length;
             document.getElementById('tx1-bits').textContent = totalBits;
-            const estTime = (3 * 0.23 + 1 + msg.length * (9 * CONFIG.BIT_INTERVAL + 0.5) + 1 + 4 * 0.23);
+            const estTime = (3 * 0.23 + 2.5 + msg.length * (9 * CONFIG.BIT_INTERVAL + 0.5) + 1 + 4 * 0.23);
             document.getElementById('tx1-time').textContent = estTime.toFixed(1) + 's';
 
             const consoleId = 'tx1-log';
@@ -1478,7 +1478,7 @@
             // Sinal de início: 3 batidas rápidas
             log(consoleId, '▶ Sinal de início (3 batidas rápidas)...', 'log-warn');
             for (let i = 0; i < 3; i++) { createBeat(t); t += 0.23; }
-            t += 1.0;
+            t += 2.5; // Pausa maior para o AGC do microfone estabilizar
 
             let bitIndex = 0;
             // Transmite cada caractere
@@ -1697,6 +1697,7 @@
 
             let totalSamplesProcessed = 0;
             let lastBeatSample = -999999;
+            let ignoreBeatsUntil = 0;
 
             clearConsole(consoleId);
             log(consoleId, '═══ RECEPÇÃO — MÉTODO 1 (BATIDAS) ═══', 'log-info log-bold');
@@ -1720,6 +1721,11 @@
                 if (isBeatChunk) {
                     if (!inBeat && (totalSamplesProcessed - lastBeatSample) > BEAT_MIN_SILENCE_SAMPLES) {
                         // New beat detected!
+                        if (startDetected && totalSamplesProcessed < ignoreBeatsUntil) {
+                            lastBeatSample = totalSamplesProcessed;
+                            return; // Ignora ecos após o start signal
+                        }
+
                         inBeat = true;
                         beatCount++;
                         lastBeatSample = totalSamplesProcessed;
@@ -1746,6 +1752,7 @@
                                     bitWindowActive = false;
                                     bitBeats = 0;
                                     bitWindowSamples = 0;
+                                    ignoreBeatsUntil = totalSamplesProcessed + Math.round(2.0 * ctx.sampleRate);
                                 }
                             }
                         } else {
