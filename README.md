@@ -472,11 +472,21 @@ Este projeto utilizou ferramentas de **IA Generativa** nas seguintes etapas:
 
 ## 8. Vídeo de Demonstração
 
-[![Vídeo de Demonstração - AcousticNet](https://img.shields.io/badge/▶_Assistir_Vídeo-YouTube-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=aVycz-Coz6I)
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=aVycz-Coz6I">
+    <img src="https://img.shields.io/badge/▶_Assistir_Vídeo-YouTube-red?style=for-the-badge&logo=youtube" alt="Assistir no YouTube">
+  </a>
+</p>
 
-[![AcousticNet - Demonstração](https://img.youtube.com/vi/aVycz-Coz6I/maxresdefault.jpg)](https://www.youtube.com/watch?v=aVycz-Coz6I)
+<p align="center">
+  <a href="https://www.youtube.com/watch?v=aVycz-Coz6I">
+    <img src="https://img.youtube.com/vi/aVycz-Coz6I/maxresdefault.jpg" alt="AcousticNet - Vídeo de Demonstração" width="720">
+  </a>
+</p>
 
-> 🎬 **Clique na imagem acima ou no botão para assistir ao vídeo de demonstração no YouTube.**
+<p align="center">
+  🎬 <strong>Clique na imagem acima para assistir ao vídeo de demonstração no YouTube.</strong>
+</p>
 
 **O vídeo demonstra:**
 - ✅ Transmissão e recepção via Método 1 (Batidas) alinhado ao padrão do vídeo de referência.
