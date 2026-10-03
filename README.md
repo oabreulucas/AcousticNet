@@ -345,7 +345,7 @@ O receptor calcula a magnitude de Goertzel para ambas as frequências (1200 Hz e
 
 ```bash
 # Clone o repositório
-git clone https://github.com/seu-usuario/AcousticNet.git
+git clone https://github.com/oabreulucas/AcousticNet.git
 cd AcousticNet
 
 # Instale as dependências
@@ -472,11 +472,11 @@ Este projeto utilizou ferramentas de **IA Generativa** nas seguintes etapas:
 
 ## 8. Vídeo de Demonstração
 
-> **⚠️ ATENÇÃO:** Insira aqui o link do vídeo de demonstração após a gravação.
+[![Vídeo de Demonstração - AcousticNet](https://img.shields.io/badge/▶_Assistir_Vídeo-YouTube-red?style=for-the-badge&logo=youtube)](https://www.youtube.com/watch?v=aVycz-Coz6I)
 
-<!-- Substitua o link abaixo pelo link real do vídeo -->
+[![AcousticNet - Demonstração](https://img.youtube.com/vi/aVycz-Coz6I/maxresdefault.jpg)](https://www.youtube.com/watch?v=aVycz-Coz6I)
 
-[![Vídeo de Demonstração - AcousticNet](https://img.shields.io/badge/▶_Assistir_Vídeo-YouTube-red?style=for-the-badge&logo=youtube)](https://youtube.com/SEU_LINK_AQUI)
+> 🎬 **Clique na imagem acima ou no botão para assistir ao vídeo de demonstração no YouTube.**
 
 **O vídeo demonstra:**
 - ✅ Transmissão e recepção via Método 1 (Batidas) alinhado ao padrão do vídeo de referência.
