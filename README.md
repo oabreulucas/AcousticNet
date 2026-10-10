@@ -473,14 +473,14 @@ Este projeto utilizou ferramentas de **IA Generativa** nas seguintes etapas:
 ## 8. Vídeo de Demonstração
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=aVycz-Coz6I">
+  <a href="https://www.youtube.com/watch?v=qBlLU1K9CU4">
     <img src="https://img.shields.io/badge/▶_Assistir_Vídeo-YouTube-red?style=for-the-badge&logo=youtube" alt="Assistir no YouTube">
   </a>
 </p>
 
 <p align="center">
-  <a href="https://www.youtube.com/watch?v=aVycz-Coz6I">
-    <img src="https://img.youtube.com/vi/aVycz-Coz6I/maxresdefault.jpg" alt="AcousticNet - Vídeo de Demonstração" width="720">
+  <a href="https://www.youtube.com/watch?v=qBlLU1K9CU4">
+    <img src="https://img.youtube.com/vi/qBlLU1K9CU4/maxresdefault.jpg" alt="AcousticNet - Vídeo de Demonstração" width="720">
   </a>
 </p>
 
